@@ -1,0 +1,75 @@
+# config.yaml - Place this in the ROOT of your project, next to main.py
+
+app_name: "HydroBot2 Scalper"
+environment: "development" # 'development' or 'production'
+log_level: "INFO" # DEBUG, INFO, WARNING, ERROR
+
+paths:
+  log_dir: "logs"
+  data_dir: "data"
+  model_dir: "models/saved"
+  config_dir: "config" # Relative path is fine if running from root
+
+# --- !!! IMPORTANT: Configure your Exchange !!! ---
+# Option 1: Put keys directly here (Less Secure - OK for testing)
+# exchange:
+#   name: "binanceus" # e.g., binanceus, coinbase, kucoin, etc.
+#   api_key: "YOUR_API_KEY"
+#   api_secret: "YOUR_API_SECRET"
+#   # api_passphrase: "YOUR_PASSPHRASE" # Only if needed (e.g., Coinbase Pro)
+#   is_sandbox: true # SET TO true FOR TESTING/SANDBOX, false FOR LIVE TRADING
+
+# Option 2: Load keys from secrets.yaml or Environment Variables (More Secure - Recommended)
+# Ensure you have a secrets.yaml file OR set environment variables like
+# EXCHANGE_API_KEY, EXCHANGE_API_SECRET
+# The settings.py loader will prioritize env vars, then secrets.yaml, then this file.
+exchange:
+  name: "binanceus" # Change to your exchange
+  is_sandbox: true  # !! START WITH SANDBOX/TESTNET !!
+
+trading:
+  symbols: ["BTC/USDT"] # List the symbols you want the scalper to trade on this exchange
+  default_order_type: "limit"
+  default_trade_amount_usd: 15.0 # How much USD worth of crypto to trade each time
+  max_open_positions: 1 # Max number of symbols to hold a position in at once
+  slippage_tolerance: 0.001 # 0.1% price slippage tolerance for limit orders
+
+risk:
+  # Risk settings are crucial - tune carefully!
+  max_drawdown_pct: 0.10 # Max 10% loss from peak portfolio value before stopping (example)
+  max_risk_per_trade_pct: 0.01 # Risk max 1% of portfolio equity per trade (example)
+  stop_loss_pct: 0.005 # Exit trade if price drops 0.5% (example) - Scalping needs tight stops
+  take_profit_pct: 0.01 # Exit trade if price rises 1% (example)
+
+strategy_manager:
+  # For now, we only have scalping, so map 'default' regime to it
+  regime_mapping:
+    default: "ScalpingStrategy"
+  # Later, you might add:
+  #   bullish: "MomentumStrategy"
+  #   bearish: "MeanReversionStrategy"
+
+# --- Parameters specifically for the Scalping Strategy ---
+scalping_strategy:
+  min_spread_pct: 0.0005 # 0.05% - Don't trade if spread is too wide
+  min_imbalance: 1.2     # Require moderate buy/sell pressure imbalance
+  lookback_period: 30    # How many data points (e.g., ticks, seconds) to look back
+  min_profit_target_pct: 0.001 # Aim for at least 0.1% profit per scalp
+  max_position_size_usd: 50.0 # Max USD value for a single scalping position
+  confidence_threshold: 0.5 # If using ML model, require > 50% confidence (set to null or 0 if no model)
+
+# --- Optional: Model Inference ---
+# Set paths if you have trained models you want to load
+model_inference:
+  prediction_model_path: null # "models/saved/prediction_model_v1.pkl"
+  regime_model_path: null # "models/saved/regime_model_v1.joblib"
+  use_gpu: false
+
+# --- Redis Connection ---
+# Used for sharing state like current portfolio between components
+# Ensure Redis server is running
+redis:
+  host: "localhost" # Or your Redis server IP/hostname
+  port: 6379
+  db: 0
+  # password: "YOUR_REDIS_PASSWORD" # Uncomment and set if your Redis requires auth

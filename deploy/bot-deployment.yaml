@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hft-bot
+  namespace: trading
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hft-bot
+  template:
+    metadata:
+      labels:
+        app: hft-bot
+    spec:
+      containers:
+      - name: hft-bot
+        image: hft-bot:latest
+        envFrom:
+        - configMapRef:
+            name: hft-bot-config
+        - secretRef:
+            name: exchange-credentials
+        resources:
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"

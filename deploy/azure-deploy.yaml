@@ -1,0 +1,292 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydrobot
+  labels:
+    app: hydrobot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hydrobot
+  template:
+    metadata:
+      labels:
+        app: hydrobot
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: hydrobot-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+      - name: hydrobot
+        image: ${CONTAINER_REGISTRY}/hydrobot:${TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8050  # Dashboard port
+        - containerPort: 8000  # Prometheus metrics
+        env:
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretRef:
+              name: hydrobot-identity
+              key: client-id
+        - name: REDIS_HOST
+          value: "redis-master"  # Redis service name
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-password
+              key: password
+        envFrom:
+        - configMapRef:
+            name: hydrobot-config
+        - secretRef:
+            name: hydrobot-secrets
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8050
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8050
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: config
+        configMap:
+          name: hydrobot-config
+      - name: logs
+        persistentVolumeClaim:
+          claimName: hydrobot-logs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hydrobot
+  labels:
+    app: hydrobot
+spec:
+  selector:
+    app: hydrobot
+  ports:
+  - name: dashboard
+    port: 8050
+    targetPort: 8050
+  - name: metrics
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hydrobot-logs-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: managed-premium
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hydrobot
+  labels:
+    app: hydrobot
+spec:
+  selector:
+    matchLabels:
+      app: hydrobot
+  endpoints:
+  - port: metrics
+    interval: 30s
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hydrobot-trading
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydrobot-core
+  namespace: hydrobot-trading
+spec:
+  replicas: 1  # Single replica for order management
+  selector:
+    matchLabels:
+      app: hydrobot-core
+  template:
+    metadata:
+      labels:
+        app: hydrobot-core
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+      - name: trading-bot
+        image: ${CONTAINER_REGISTRY}/hydrobot:latest
+        imagePullPolicy: Always
+        env:
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: azure-secrets
+              key: tenant-id
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: azure-secrets
+              key: client-id
+        envFrom:
+        - configMapRef:
+            name: hydrobot-config
+        - secretRef:
+            name: exchange-secrets
+        ports:
+        - containerPort: 8000
+          name: metrics
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+      volumes:
+      - name: config-volume
+        configMap:
+          name: hydrobot-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hydrobot-metrics
+  namespace: hydrobot-trading
+spec:
+  selector:
+    app: hydrobot-core
+  ports:
+  - port: 8000
+    targetPort: metrics
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-master
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+    spec:
+      containers:
+      - name: redis
+        image: redis:6.2-alpine
+        command: ["redis-server", "/redis-config/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-config
+          mountPath: /redis-config
+        - name: redis-data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-config
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis.conf: |
+    appendonly yes
+    requirepass ${REDIS_PASSWORD}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+spec:
+  selector:
+    app: redis
+    role: master
+  ports:
+  - port: 6379
+    targetPort: 6379
+  clusterIP: None

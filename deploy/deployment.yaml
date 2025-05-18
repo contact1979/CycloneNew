@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hft-scalping-bot
+  labels:
+    app: hft-scalping-bot
+spec:
+  replicas: 1  # Only run one instance to avoid order conflicts
+  selector:
+    matchLabels:
+      app: hft-scalping-bot
+  template:
+    metadata:
+      labels:
+        app: hft-scalping-bot
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: hft-scalping-bot
+        image: hft-scalping-bot:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: metrics
+        envFrom:
+        - configMapRef:
+            name: hft-bot-config
+        - secretRef:
+            name: hft-bot-secrets
+        resources:
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+          limits:
+            cpu: "4"
+            memory: "8Gi"
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          failureThreshold: 30
+          periodSeconds: 10
+        env:
+        - name: PROMETHEUS_PUSHGATEWAY
+          valueFrom:
+            configMapKeyRef:
+              name: hft-bot-config
+              key: PROMETHEUS_PUSHGATEWAY
+        - name: METRICS_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: hft-bot-config
+              key: METRICS_INTERVAL
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000

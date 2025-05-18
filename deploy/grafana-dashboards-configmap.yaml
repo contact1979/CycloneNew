@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  labels:
+    app: grafana
+    component: monitoring
+data:
+  strategy-monitoring.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "uid": "hft-strategy-monitoring",
+        "title": "HFT Strategy Monitoring",
+        "tags": ["trading", "hft"],
+        "timezone": "browser",
+        "schemaVersion": 27,
+        "version": 1
+      },
+      "folderId": 0,
+      "overwrite": true
+    }
