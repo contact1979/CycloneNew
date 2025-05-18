@@ -158,6 +158,7 @@ The bot has been designed with error handling mechanisms for common issues such 
 5. **Order Book Analysis**: Implementing real-time order book analysis to ensure that liquidity constraints are dynamically managed.
 6. **Momentum Strategy**: Added a simple moving-average crossover strategy that can be enabled for bullish market regimes.
 7. **Mean Reversion Strategy**: Introduces a basic mean-reversion approach for bearish market conditions.
+8. **VWAP Strategy**: Adds a strategy that trades when price deviates from the volume-weighted average price.
 
 ## Risks & Limitations
 

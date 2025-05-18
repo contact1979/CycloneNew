@@ -6,9 +6,11 @@ from hydrobot.trading.position_manager import Position, PositionManager
 from hydrobot.strategies.base_strategy import Signal
 from hydrobot.strategies.impl_momentum import MomentumStrategy
 from hydrobot.strategies.impl_mean_reversion import MeanReversionStrategy
+from hydrobot.strategies.impl_vwap import VWAPStrategy
 from hydrobot.config.settings import (
     MomentumStrategySettings,
     MeanReversionStrategySettings,
+    VWAPStrategySettings,
     AppSettings,
     ExchangeAPISettings,
     TradingSettings,
@@ -177,6 +179,27 @@ def test_mean_reversion_strategy_signal_generation():
     strategy.on_market_update({"last_trade": 100.0})
     strategy.on_market_update({"last_trade": 102.0})
     strategy.on_market_update({"last_trade": 101.0})
+
+    data = {"last_trade": 103.0, "asks": [[103.0, 1.0]], "bids": [[102.0, 1.0]]}
+    signal = strategy.generate_signal(data)
+    assert signal.action in ["BUY", "SELL", "HOLD"]
+
+
+def test_vwap_strategy_signal_generation():
+    """Ensure VWAPStrategy reacts to price deviations."""
+    global_config = AppSettings(
+        exchange=ExchangeAPISettings(name="binanceus"),
+        trading=TradingSettings(symbols=["BTC/USDT"], default_trade_amount_usd=10.0),
+    )
+    strategy = VWAPStrategy(
+        {"window_size": 3, "deviation_threshold": 0.001},
+        global_config,
+    )
+    strategy.set_symbol("BTC/USDT")
+
+    strategy.on_market_update({"last_trade": 100.0})
+    strategy.on_market_update({"last_trade": 101.0})
+    strategy.on_market_update({"last_trade": 102.0})
 
     data = {"last_trade": 103.0, "asks": [[103.0, 1.0]], "bids": [[102.0, 1.0]]}
     signal = strategy.generate_signal(data)
