@@ -30,13 +30,13 @@ azure-identity = "^1.12.0"
 google-cloud-secret-manager = "^2.16.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.0.0"
-coverage = "^7.0.0"
-pytest-asyncio = "^0.17.0"
-pytest-cov = "^3.0.0"
-black = "^22.0.0"
-mypy = "^0.900"
-flake8 = "^4.0.0"
+pytest = "^7.4"
+coverage = "^7.4"
+pytest-asyncio = "^0.23"
+pytest-cov = "^4.1"
+black = "^24.1"
+mypy = "^1.8"
+flake8 = "^6.1"
 
 [[tool.poetry.source]]
 name = "pypi"
