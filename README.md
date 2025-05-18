@@ -115,6 +115,18 @@ Avg Trade Duration:     1.00 minutes
 Total Return:           18.16%
 ```
 
+### Running Tests
+
+Unit tests are provided in the `tests/` directory. After installing the
+development dependencies, run the test suite with `pytest`:
+
+```bash
+pytest
+```
+
+For Poetry users you can also execute `poetry run pytest` which will use the
+virtual environment managed by Poetry.
+
 ### Running the Bot in Live Mode
 
 To run the bot live in real markets, use the following command:
