@@ -4,17 +4,21 @@ param(
     [string]$Python = "python"
 )
 
-Write-Host "[HydroBot] Setting up virtual environment..."
-if (-Not (Test-Path '.venv')) {
-    & $Python -m venv .venv
+# Create venv if missing
+if (!(Test-Path "./venv")) {
+    & $Python -m venv venv
 }
 
-& .\venv\Scripts\pip.exe install --upgrade pip
-& .\venv\Scripts\pip.exe install -r requirements.txt
+.\venv\Scripts\activate
 
-if (-Not (Test-Path '.env')) {
-    Copy-Item '.env.example' '.env'
-    Write-Host 'Created default .env from .env.example'
+# Install runtime dependencies
+pip install -r requirements.txt
+
+# Install dev tooling
+if (Test-Path "./dev-requirements.txt") {
+    pip install -r dev-requirements.txt
+} else {
+    pip install pytest coverage mypy
 }
 
-Write-Host 'Setup complete. Activate with `./venv/Scripts/Activate.ps1`.'
+Write-Host "✅ Env ready. Run tests with: python -m pytest -q"

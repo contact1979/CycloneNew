@@ -1,4 +1,5 @@
 # HydroBot
+[![Test](https://github.com/OWNER/REPO/actions/workflows/test.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/test.yml)
 
 ## Disclaimer
 
@@ -42,6 +43,10 @@ cd HydroBot
 Make sure to install the required Python dependencies by running the following command:
 ```bash
 pip install -r requirements.txt
+```
+For development dependencies managed by Poetry, run:
+```bash
+poetry add --group dev pytest coverage mypy
 ```
 
 ### Environment Setup
