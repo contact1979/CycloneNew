@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+  bot:
+    build: .
+    command: python main.py
+    env_file:
+      - .env
+    depends_on:
+      - redis
+  dashboard:
+    build: .
+    command: python dashboard/app.py
+    ports:
+      - '8050:8050'
+    env_file:
+      - .env
+    depends_on:
+      - redis
+volumes:
+  redis_data:

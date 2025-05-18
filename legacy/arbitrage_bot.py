@@ -1,3 +1,6 @@
+# Copyright (c) 2025 HydroBot Contributors
+# Licensed under the MIT License.
+# Legacy arbitrage bot kept for reference.
 # arbitrage_bot.py
 
 import ccxt.async_support as ccxt  # Asynchronous CCXT

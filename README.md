@@ -1,11 +1,11 @@
-# Crypto Arbitrage Bot
+# HydroBot
 
 ## Disclaimer
 
-This Crypto Arbitrage Bot is for educational and research purposes only. Cryptocurrency trading carries a high level of risk, and may not be suitable for all investors. Before deciding to trade cryptocurrency, you should carefully consider your investment objectives, level of experience, and risk appetite. The possibility exists that you could sustain a loss of some or all of your initial investment and therefore you should not invest money that you cannot afford to lose. You should be aware of all the risks associated with cryptocurrency trading, and seek advice from an independent financial advisor if you have any doubts. This project is an educational exercise and not intended to be assumed as an actionable financial model.
+This HydroBot is for educational and research purposes only. Cryptocurrency trading carries a high level of risk, and may not be suitable for all investors. Before deciding to trade cryptocurrency, you should carefully consider your investment objectives, level of experience, and risk appetite. The possibility exists that you could sustain a loss of some or all of your initial investment and therefore you should not invest money that you cannot afford to lose. You should be aware of all the risks associated with cryptocurrency trading, and seek advice from an independent financial advisor if you have any doubts. This project is an educational exercise and not intended to be assumed as an actionable financial model.
 
 ## Overview
-This project implements a **Crypto Arbitrage Bot** designed to detect and exploit price discrepancies between different cryptocurrency exchanges. The bot continuously monitors bid-ask spreads and executes arbitrage opportunities when favorable conditions arise. Specifically, this bot identifies inter-exchange arbitrage opportunities by analyzing price data in real-time from multiple exchanges such as **Coinbase** and **Bitfinex**.
+This project implements a **HydroBot** designed to detect and exploit price discrepancies between different cryptocurrency exchanges. The bot continuously monitors bid-ask spreads and executes arbitrage opportunities when favorable conditions arise. Specifically, this bot identifies inter-exchange arbitrage opportunities by analyzing price data in real-time from multiple exchanges such as **Coinbase** and **Bitfinex**.
 
 The architecture leverages Python for real-time data collection, analysis, and multi-threaded execution of trades. It supports both **market orders** and **limit orders**, with detailed handling of exchange-specific APIs, fee structures, and latency challenges.
 
@@ -34,8 +34,8 @@ The bot is structured in the following components:
   
 ### Clone the Repository
 ```bash
-git clone https://github.com/kashyapnathan/crypto-arbitrage.git
-cd crypto-arbitrage-bot
+git clone <your-fork-url>
+cd HydroBot
 ```
 
 ### Install Dependencies
@@ -131,13 +131,13 @@ virtual environment managed by Poetry.
 
 To run the bot live in real markets, use the following command:
 ```bash
-python arbitrage_bot.py
+python main.py
 ```
 **Note**: Ensure you start with small trades to validate performance and check live profitability before scaling up.
 
 ### Key Functions
 
-- **arbitrage_bot.py**: The main execution script for running live arbitrage trading.
+- **main.py**: The main execution script for running live arbitrage trading.
 - **backtest.py**: Script to run backtesting on historical data and validate performance of the arbitrage strategy.
 - **data.py**: Handles data fetching from exchanges using API calls.
 - **trade_log.csv**: Keeps a detailed log of trades made, including timestamp, exchanges, buy/sell prices, and profit.
@@ -170,3 +170,10 @@ The bot has been designed with error handling mechanisms for common issues such 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
+
+### Running with Docker Compose
+If you prefer Docker, build and start all services with:
+```bash
+docker compose up --build
+```
+This will launch Redis, the trading bot, and the dashboard on port 8050.
