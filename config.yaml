@@ -46,7 +46,7 @@ strategy_manager:
   regime_mapping:
     default: "ScalpingStrategy"
     bullish: "MomentumStrategy"
-  #   bearish: "MeanReversionStrategy"
+    bearish: "MeanReversionStrategy"
 
 # --- Parameters specifically for the Scalping Strategy ---
 scalping_strategy:
@@ -60,6 +60,10 @@ scalping_strategy:
 momentum_strategy:
   short_window: 10
   long_window: 30
+
+mean_reversion_strategy:
+  window_size: 20
+  std_dev_threshold: 1.5
 
 # --- Optional: Model Inference ---
 # Set paths if you have trained models you want to load

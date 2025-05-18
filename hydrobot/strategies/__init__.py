@@ -3,6 +3,7 @@
 from .base_strategy import Strategy, Signal
 from .impl_scalping import ScalpingStrategy
 from .impl_momentum import MomentumStrategy
+from .impl_mean_reversion import MeanReversionStrategy
 from .strategy_manager import StrategyManager
 
 __all__ = [
@@ -10,5 +11,6 @@ __all__ = [
     "Signal",
     "ScalpingStrategy",
     "MomentumStrategy",
+    "MeanReversionStrategy",
     "StrategyManager",
 ]

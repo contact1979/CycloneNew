@@ -145,6 +145,7 @@ The bot has been designed with error handling mechanisms for common issues such 
 4. **Latency Optimization**: Improving multi-threading and reducing the latency of API calls to minimize execution risk.
 5. **Order Book Analysis**: Implementing real-time order book analysis to ensure that liquidity constraints are dynamically managed.
 6. **Momentum Strategy**: Added a simple moving-average crossover strategy that can be enabled for bullish market regimes.
+7. **Mean Reversion Strategy**: Introduces a basic mean-reversion approach for bearish market conditions.
 
 ## Risks & Limitations
 

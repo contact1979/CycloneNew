@@ -66,6 +66,15 @@ class MomentumStrategySettings(BaseModel):
     short_window: int = Field(10, description="Short moving average window size.")
     long_window: int = Field(30, description="Long moving average window size.")
 
+# --- Mean Reversion Strategy Settings ---
+class MeanReversionStrategySettings(BaseModel):
+    """Parameters for a basic mean reversion strategy."""
+    window_size: int = Field(20, description="Rolling window size for mean calculation.")
+    std_dev_threshold: float = Field(
+        1.5,
+        description="Standard deviation multiplier for entry/exit thresholds.",
+    )
+
 # --- Strategy Manager Settings ---
 class StrategyManagerSettings(BaseModel):
     """Settings for how strategies are selected and managed."""
@@ -103,6 +112,9 @@ class AppSettings(BaseModel):
     strategy_manager: StrategyManagerSettings = Field(default_factory=StrategyManagerSettings)
     scalping_strategy: ScalpingStrategySettings = Field(default_factory=ScalpingStrategySettings)
     momentum_strategy: MomentumStrategySettings = Field(default_factory=MomentumStrategySettings)
+    mean_reversion_strategy: MeanReversionStrategySettings = Field(
+        default_factory=MeanReversionStrategySettings
+    )
     model_inference: Optional[ModelInferenceSettings] = Field(default_factory=ModelInferenceSettings) # Optional for now
     redis: RedisSettings = Field(default_factory=RedisSettings)
 
