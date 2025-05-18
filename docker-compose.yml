@@ -3,27 +3,17 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: hydro
-      POSTGRES_PASSWORD: hydro
-      POSTGRES_DB: hydrobot
-    ports:
-      - '5432:5432'
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-  bot:
+
+  hydrobot:
     build: .
     command: python main.py
     env_file:
       - .env
     depends_on:
       - redis
-      - db
+
 volumes:
   redis_data:
-  pg_data:

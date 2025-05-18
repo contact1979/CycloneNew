@@ -1,4 +1,4 @@
-param([string]$Python='python')
+param([string]$Python = 'python')
 
 if (!(Test-Path 'venv')) {
     & $Python -m venv venv
@@ -7,6 +7,9 @@ if (!(Test-Path 'venv')) {
 .\venv\Scripts\Activate
 
 pip install -r requirements.txt
-pip install -r dev-requirements.txt
+if (Test-Path 'dev-requirements.txt') {
+    pip install -r dev-requirements.txt
+}
 
 Write-Host 'Environment ready.'
+Write-Host "Run tests with: python -m pytest -q"
