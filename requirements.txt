@@ -1,22 +1,6 @@
-# requirements.txt - Place this in the project root directory
-
-# Core Configuration & Validation
-pydantic>=1.9.0,<2.0.0  # For settings validation (Using v1 for broader compatibility for now)
-pyyaml>=6.0              # For loading config.yaml
-
-# Exchange Communication (Async version recommended for trading bots)
-# Installs ccxt and necessary async libraries (aiohttp, etc.)
-ccxt[async]>=4.0.0      # Check latest stable version if needed
-
-# State Management (Position Manager Persistence)
-redis>=4.3.0             # For connecting to Redis
-
-# Add other libraries as needed later, e.g.:
-# pandas             # For data analysis / feature engineering
-# numpy              # For numerical operations
-# scikit-learn       # For machine learning models
-# tensorflow or pytorch # For deep learning
-# python-dotenv      # For loading environment variables from .env file
-# prometheus-client  # For metrics/monitoring
-# plotly             # For dashboarding
-# dash               # For dashboarding framework
+pandas
+numpy
+requests
+ccxt
+scipy
+matplotlib
