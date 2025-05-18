@@ -94,7 +94,8 @@ async def test_position_manager():
     # Test initial position update (buy)
     symbol = "BTC/USDT"
     quantity = 0.1  # Buy quantity
-    price = 100.0    timestamp = datetime.utcnow().timestamp()
+    price = 100.0
+    timestamp = datetime.utcnow().timestamp()
     manager.update_position_on_fill(symbol, quantity, price, timestamp)
     position = manager.get_position(symbol)
     assert position.symbol == "BTC/USDT"
