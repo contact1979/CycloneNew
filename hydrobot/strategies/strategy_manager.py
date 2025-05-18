@@ -3,14 +3,14 @@
 import importlib
 import pkgutil
 import inspect
+import os
 from typing import Dict, Type, Optional, Any
 
 # --- FIX: Use relative imports ---
 # Import the base class and specific strategies to ensure they are recognized
 from .base_strategy import Strategy
 from .impl_scalping import ScalpingStrategy
-# If you add more strategies, import their classes here as well:
-# from .impl_momentum import MomentumStrategy
+from .impl_momentum import MomentumStrategy
 # from .impl_mean_reversion import MeanReversionStrategy
 
 from ..config.settings import get_config, AppSettings, StrategyManagerSettings
@@ -55,6 +55,9 @@ class StrategyManager:
         if "ScalpingStrategy" not in strategies and ScalpingStrategy:
              strategies["ScalpingStrategy"] = ScalpingStrategy
              log.debug("Explicitly added ScalpingStrategy.")
+        if "MomentumStrategy" not in strategies and MomentumStrategy:
+             strategies["MomentumStrategy"] = MomentumStrategy
+             log.debug("Explicitly added MomentumStrategy.")
 
         if not strategies:
              log.warning("No strategy classes were automatically discovered!")

@@ -42,11 +42,10 @@ risk:
   take_profit_pct: 0.01 # Exit trade if price rises 1% (example)
 
 strategy_manager:
-  # For now, we only have scalping, so map 'default' regime to it
+  # Map regimes to strategy implementations
   regime_mapping:
     default: "ScalpingStrategy"
-  # Later, you might add:
-  #   bullish: "MomentumStrategy"
+    bullish: "MomentumStrategy"
   #   bearish: "MeanReversionStrategy"
 
 # --- Parameters specifically for the Scalping Strategy ---
@@ -57,6 +56,10 @@ scalping_strategy:
   min_profit_target_pct: 0.001 # Aim for at least 0.1% profit per scalp
   max_position_size_usd: 50.0 # Max USD value for a single scalping position
   confidence_threshold: 0.5 # If using ML model, require > 50% confidence (set to null or 0 if no model)
+
+momentum_strategy:
+  short_window: 10
+  long_window: 30
 
 # --- Optional: Model Inference ---
 # Set paths if you have trained models you want to load
