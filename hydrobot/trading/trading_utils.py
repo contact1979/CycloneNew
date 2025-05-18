@@ -2,8 +2,10 @@
 
 import math
 from decimal import Decimal, ROUND_DOWN, ROUND_UP # Use Decimal for precision
-import ccxt.async_support as ccxt # Needed for type hinting and accessing market info
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover - avoid runtime dependency during tests
+    import ccxt.async_support as ccxt
 
 # --- FIX: Use relative import ---
 from ..utils.logger_setup import get_logger
@@ -12,9 +14,11 @@ log = get_logger()
 
 _market_cache: Dict[str, Dict[str, Any]] = {}
 
-async def update_market_cache(exchange: ccxt.Exchange):
+async def update_market_cache(exchange: "ccxt.Exchange"):
     """Fetches and caches market information from the exchange."""
     global _market_cache
+    # Import ccxt only when this function is invoked to avoid heavy dependency
+    import ccxt.async_support as ccxt
     if not exchange or not exchange.markets: # Check if markets loaded
         try:
              if not exchange: raise ValueError("Exchange object is None")
