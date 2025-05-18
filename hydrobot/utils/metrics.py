@@ -3,11 +3,32 @@
 Defines and registers metrics for monitoring bot performance,
 latencies, and system health.
 """
-from prometheus_client import Counter, Gauge, Histogram, Summary
-import prometheus_client
+try:
+    from prometheus_client import Counter, Gauge, Histogram, Summary
+    import prometheus_client
+except ImportError:  # pragma: no cover - metrics are optional
+    class _Dummy:
+        def __init__(self, *args, **kwargs):
+            pass
+        def labels(self, *args, **kwargs):
+            return self
+        def inc(self, *args, **kwargs):
+            pass
+        def observe(self, *args, **kwargs):
+            pass
+        def time(self):
+            def decorator(func):
+                return func
+            return decorator
+
+    prometheus_client = None
+    Counter = Gauge = Histogram = Summary = _Dummy
 
 # Initialize metrics registry
-metrics_registry = prometheus_client.CollectorRegistry()
+if prometheus_client is not None:
+    metrics_registry = prometheus_client.CollectorRegistry()
+else:  # pragma: no cover - optional metrics
+    metrics_registry = None
 
 # Market data metrics
 MARKET_DATA_UPDATES = Counter(
@@ -177,19 +198,31 @@ SYSTEM_LATENCY = Summary(
 
 """Utilities for calculating trading and backtest performance metrics."""
 
-import numpy as np
-import pandas as pd
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - optional
+    np = None
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - optional
+    pd = None
 from typing import Dict, List, Any
 
-def calculate_sharpe_ratio(returns: pd.Series, risk_free_rate: float = 0.0) -> float:
+from typing import Any
+
+def calculate_sharpe_ratio(returns: Any, risk_free_rate: float = 0.0) -> float:
     """Calculate Sharpe ratio from returns series."""
+    if pd is None or np is None:
+        return 0.0
     excess_returns = returns - risk_free_rate
     if len(excess_returns) < 2:
         return 0.0
     return np.sqrt(252) * (np.mean(excess_returns) / np.std(excess_returns, ddof=1))
 
-def calculate_max_drawdown(equity_curve: pd.Series) -> float:
+def calculate_max_drawdown(equity_curve: Any) -> float:
     """Calculate maximum drawdown from equity curve."""
+    if pd is None:
+        return 0.0
     rolling_max = equity_curve.expanding(min_periods=1).max()
     drawdowns = equity_curve / rolling_max - 1.0
     return abs(min(drawdowns))
@@ -202,7 +235,7 @@ def calculate_win_rate(trades: List[Dict]) -> float:
     return profitable_trades / len(trades)
 
 def calculate_metrics(
-    equity_series: pd.Series,
+    equity_series: Any,
     trades: List[Dict],
     initial_capital: float,
     config: Dict[str, bool]
@@ -221,6 +254,9 @@ def calculate_metrics(
     metrics = {}
     
     # Always calculate basic metrics
+    if pd is None:
+        return metrics
+
     total_return = ((equity_series.iloc[-1] / equity_series.iloc[0]) - 1) * 100
     metrics['total_return_pct'] = total_return
     metrics['total_trades'] = len(trades)

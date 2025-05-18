@@ -1,7 +1,6 @@
 """Core functionality tests for HFT scalping bot."""
 import pytest
 from datetime import datetime
-import numpy as np
 from hydrobot.data_ingestion.market_data_stream import OrderBook
 from hydrobot.trading.position_manager import Position, PositionManager
 from hydrobot.strategies.base_strategy import Signal

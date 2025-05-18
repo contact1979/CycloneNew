@@ -5,7 +5,10 @@ import time
 import math # For isnan
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Tuple
-import redis
+try:
+    import redis  # type: ignore
+except ImportError:  # pragma: no cover
+    redis = None
 
 # --- FIX: Use relative imports ---
 from ..config.settings import get_config, AppSettings
@@ -91,7 +94,7 @@ class PositionManager:
 
     def _connect_redis(self):
         """Establishes connection to the Redis server."""
-        if self.config.redis:
+        if self.config.redis and redis is not None:
             try:
                 self.redis_client = redis.Redis(
                     host=self.config.redis.host, port=self.config.redis.port, db=self.config.redis.db,
@@ -107,6 +110,8 @@ class PositionManager:
                 self.redis_client = None
         else:
              self.redis_client = None
+             if redis is None:
+                 log.warning("Redis package not installed. Persistence disabled.")
 
     def _save_position_to_redis(self, position: Position):
         """Saves a single position object to Redis."""

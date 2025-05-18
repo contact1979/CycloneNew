@@ -5,7 +5,10 @@
 import os
 from pydantic import BaseModel, Field, SecretStr, validator
 from typing import List, Optional, Dict, Any
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover - optional dependency
+    yaml = None
 import logging
 
 # Setup basic logger for config loading issues
@@ -118,6 +121,10 @@ def load_config(config_file: str = "config/config.yaml", secrets_file: Optional[
     """
     config_data = {}
     if os.path.exists(config_file):
+        if yaml is None:
+            raise RuntimeError(
+                "PyYAML is required to load configuration files. Please install it."
+            )
         log.info(f"Loading configuration from: {config_file}")
         with open(config_file, 'r') as f:
             config_data = yaml.safe_load(f) or {}
@@ -129,6 +136,10 @@ def load_config(config_file: str = "config/config.yaml", secrets_file: Optional[
     if 'redis' not in config_data: config_data['redis'] = {}
 
     if secrets_file and os.path.exists(secrets_file):
+        if yaml is None:
+            raise RuntimeError(
+                "PyYAML is required to load configuration files. Please install it."
+            )
         log.info(f"Loading secrets from: {secrets_file}")
         with open(secrets_file, 'r') as f:
             secrets_data = yaml.safe_load(f) or {}
@@ -204,3 +215,6 @@ def get_config() -> AppSettings:
         # Attempting to reload might hide the original error. Better to raise.
         raise RuntimeError("Configuration could not be loaded. Check logs for details.")
     return CONFIG
+
+# Backwards compatibility
+settings = CONFIG
