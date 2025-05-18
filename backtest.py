@@ -20,10 +20,12 @@ if not os.path.exists(LOG_DIR):
 
 # Configure logging
 logging.basicConfig(
-    filename=os.path.join(LOG_DIR, f'backtest_{
-                          datetime.now().strftime("%Y%m%d_%H%M%S")}.log'),
+    filename=os.path.join(
+        LOG_DIR,
+        f"backtest_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    ),
     level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
+    format="%(asctime)s [%(levelname)s] %(message)s",
 )
 
 # Load configuration
@@ -140,10 +142,12 @@ def check_arbitrage_opportunities(exchanges_config, order_books, balances):
                     profit_percent, profit = calculate_profit(
                         buy_price, sell_price, buy_fee, sell_fee, max_amount
                     )
-                    logging.debug(f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {
-                                  sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}")
-                    logging.info(f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {
-                                 sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}")
+                    logging.debug(
+                        f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}"
+                    )
+                    logging.info(
+                        f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}"
+                    )
                     if profit_percent >= min_profit_percent:
                         opportunity = {
                             'buy_exchange': buy_ex,
@@ -179,12 +183,14 @@ def simulate_trade(balances, opportunity, exchanges_config):
 
         # We don't need to adjust BTC balances because we're buying and selling immediately
 
-        logging.info(f"Trade executed: Buy {amount} BTC on {buy_ex} at {
-                     buy_price}, Sell on {sell_ex} at {sell_price}")
+        logging.info(
+            f"Trade executed: Buy {amount} BTC on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}"
+        )
         return True
     else:
-        logging.warning(f"Insufficient USD balance for trade on {buy_ex}. "
-                        f"Required: {cost}, Available: {balances[buy_ex]['USD']}")
+        logging.warning(
+            f"Insufficient USD balance for trade on {buy_ex}. Required: {cost}, Available: {balances[buy_ex]['USD']}"
+        )
         return False
 
 
@@ -325,8 +331,9 @@ def main_backtest():
     print(f"{Fore.MAGENTA}BACKTEST RESULTS{Style.RESET_ALL}".center(60))
     print(f"{Fore.MAGENTA}{'=' * 60}{Style.RESET_ALL}\n")
 
-    print(f"{Fore.YELLOW}Profit of ${total_profit:.2f} made in {
-          time_diff}{Style.RESET_ALL}\n")
+    print(
+        f"{Fore.YELLOW}Profit of ${total_profit:.2f} made in {time_diff}{Style.RESET_ALL}\n"
+    )
 
     summary_data = [
         ["Total Profit", f"{Fore.GREEN}${total_profit:.2f}{Style.RESET_ALL}"],
@@ -337,16 +344,26 @@ def main_backtest():
           "Metric", "Value"], tablefmt="fancy_grid"))
 
     advanced_metrics_table = [
-        ["Trade Frequency", f"{
-            advanced_metrics['Trade Frequency']:.2f} trades/minute"],
-        ["Avg Profit per Trade", color_profit(
-            f"${advanced_metrics['Avg Profit per Trade']:.2f}")],
-        ["Largest Single Profit", f"{Fore.GREEN}${
-            advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}"],
-        ["Largest Single Loss", f"{Fore.RED}${
-            advanced_metrics['Largest Single Loss']:.2f}{Style.RESET_ALL}"],
-        ["Avg Trade Duration", f"{
-            advanced_metrics['Avg Trade Duration']:.2f} minutes"],
+        [
+            "Trade Frequency",
+            f"{advanced_metrics['Trade Frequency']:.2f} trades/minute",
+        ],
+        [
+            "Avg Profit per Trade",
+            color_profit(f"${advanced_metrics['Avg Profit per Trade']:.2f}"),
+        ],
+        [
+            "Largest Single Profit",
+            f"{Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}",
+        ],
+        [
+            "Largest Single Loss",
+            f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}{Style.RESET_ALL}",
+        ],
+        [
+            "Avg Trade Duration",
+            f"{advanced_metrics['Avg Trade Duration']:.2f} minutes",
+        ],
         ["Total Return", f"{advanced_metrics['Total Return']:.2%}"]
     ]
 
@@ -356,8 +373,10 @@ def main_backtest():
                    tablefmt="fancy_grid"))
 
     additional_data = [
-        ["Profit Range", f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}{
-            Style.RESET_ALL} <-> {Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}"],
+        [
+            "Profit Range",
+            f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}{Style.RESET_ALL} <-> {Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}",
+        ],
         ["Most Common Pair", "Coinbase (Buy) -> Bitfinex (Sell)"]
     ]
 
@@ -393,16 +412,18 @@ def main_backtest():
         # Sort the sample rows by timestamp
         sample_rows = sample_rows.sort_values('timestamp')
 
-        print(f"\n{Fore.CYAN}{Back.BLACK}{
-              'SELECTED TRADES FROM LOG':^70}{Style.RESET_ALL}")
+        print(
+            f"\n{Fore.CYAN}{Back.BLACK}{'SELECTED TRADES FROM LOG':^70}{Style.RESET_ALL}"
+        )
         print(tabulate(sample_rows[display_columns],
                        headers=[f"{Fore.MAGENTA}{header}{Style.RESET_ALL}" for header in
                                 ['Timestamp', 'Buy Exchange', 'Sell Exchange', 'Buy Price', 'Sell Price', 'Profit']],
                        tablefmt='fancy_grid',
                        showindex=False))
     else:
-        print(f"\n{Fore.RED}No trades were executed during the backtest.{
-              Style.RESET_ALL}\n")
+        print(
+            f"\n{Fore.RED}No trades were executed during the backtest.{Style.RESET_ALL}\n"
+        )
 
     # Add a bunch of space after the last table
     print("\n" * 5)

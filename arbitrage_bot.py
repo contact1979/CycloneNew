@@ -34,13 +34,15 @@ def load_config():
 config = load_config()
 
 # Configure logging with level from config
-log_level_str = config.get('log_level', 'INFO').upper()
+log_level_str = config.get("log_level", "INFO").upper()
 log_level = getattr(logging, log_level_str, logging.INFO)
 logging.basicConfig(
-    filename=os.path.join(LOG_DIR, f'arbitrage_bot_{
-                          datetime.now().strftime("%Y%m%d_%H%M%S")}.log'),
+    filename=os.path.join(
+        LOG_DIR,
+        f"arbitrage_bot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    ),
     level=log_level,
-    format='%(asctime)s [%(levelname)s] %(message)s'
+    format="%(asctime)s [%(levelname)s] %(message)s",
 )
 
 # Add console handler to logging
@@ -99,19 +101,22 @@ async def init_exchanges():
             # Map symbols if necessary
             ex_symbol = exchange_symbol_map.get(exchange_id, symbol)
             if ex_symbol not in exchange.symbols:
-                logging.error(f"Symbol {ex_symbol} not available on {
-                              exchange_id}. Skipping.")
+                logging.error(
+                    f"Symbol {ex_symbol} not available on {exchange_id}. Skipping."
+                )
                 continue
             exchange_instances[exchange_id] = {
                 'instance': exchange,
                 'fees': ex_conf['fees'],
                 'symbol': ex_symbol
             }
-            logging.info(f"Initialized exchange: {
-                         exchange_id} with symbol: {ex_symbol}")
+            logging.info(
+                f"Initialized exchange: {exchange_id} with symbol: {ex_symbol}"
+            )
         except Exception as e:
-            logging.error(f"Failed to initialize {exchange_id}: {
-                          type(e).__name__} - {e}")
+            logging.error(
+                f"Failed to initialize {exchange_id}: {type(e).__name__} - {e}"
+            )
     return exchange_instances
 
 
@@ -138,8 +143,9 @@ async def fetch_order_book(exchange, symbol, name):
         ask = order_book['asks'][0][0] if order_book['asks'] else None
         return name, {'bid': bid, 'ask': ask}
     except Exception as e:
-        logging.error(f"Error fetching order book from {
-                      name}: {type(e).__name__} - {e}")
+        logging.error(
+            f"Error fetching order book from {name}: {type(e).__name__} - {e}"
+        )
         return None
 
 
@@ -189,12 +195,14 @@ async def check_balance(exchange, currency, amount):
         if available >= amount:
             return True
         else:
-            logging.warning(f"Insufficient balance on {exchange.id}: needed {
-                            amount}, available {available}")
+            logging.warning(
+                f"Insufficient balance on {exchange.id}: needed {amount}, available {available}"
+            )
             return False
     except Exception as e:
-        logging.error(f"Failed to fetch balance from {
-                      exchange.id}: {type(e).__name__} - {e}")
+        logging.error(
+            f"Failed to fetch balance from {exchange.id}: {type(e).__name__} - {e}"
+        )
         return False
 
 
@@ -209,31 +217,41 @@ async def execute_trade(buy_exchange_info, sell_exchange_info, opportunity):
 
     # Place buy order
     try:
-        buy_order = await buy_exchange.create_limit_buy_order(buy_symbol, amount, buy_price)
-        logging.info(f"Buy order placed on {
-                     buy_exchange.id}: {buy_order['id']}")
+        buy_order = await buy_exchange.create_limit_buy_order(
+            buy_symbol, amount, buy_price
+        )
+        logging.info(
+            f"Buy order placed on {buy_exchange.id}: {buy_order['id']}"
+        )
     except Exception as e:
-        logging.error(f"Failed to place buy order on {
-                      buy_exchange.id}: {type(e).__name__} - {e}")
+        logging.error(
+            f"Failed to place buy order on {buy_exchange.id}: {type(e).__name__} - {e}"
+        )
         return False
 
     # Place sell order
     try:
-        sell_order = await sell_exchange.create_limit_sell_order(sell_symbol, amount, sell_price)
-        logging.info(f"Sell order placed on {
-                     sell_exchange.id}: {sell_order['id']}")
+        sell_order = await sell_exchange.create_limit_sell_order(
+            sell_symbol, amount, sell_price
+        )
+        logging.info(
+            f"Sell order placed on {sell_exchange.id}: {sell_order['id']}"
+        )
     except Exception as e:
-        logging.error(f"Failed to place sell order on {
-                      sell_exchange.id}: {type(e).__name__} - {e}")
+        logging.error(
+            f"Failed to place sell order on {sell_exchange.id}: {type(e).__name__} - {e}"
+        )
         # Attempt to cancel buy order
         try:
             await buy_exchange.cancel_order(buy_order['id'], buy_symbol)
-            logging.info(f"Buy order {buy_order['id']} canceled on {
-                         buy_exchange.id}")
+            logging.info(
+                f"Buy order {buy_order['id']} canceled on {buy_exchange.id}"
+            )
         except Exception as cancel_e:
-            logging.error(f"Failed to cancel buy order {buy_order['id']} on {
-                          buy_exchange.id}: {type(cancel_e).__name__} - {cancel_e}")
-        return False
+            logging.error(
+                f"Failed to cancel buy order {buy_order['id']} on {buy_exchange.id}: {type(cancel_e).__name__} - {cancel_e}"
+            )
+            return False
 
     # Monitor order statuses
     buy_filled = await monitor_order(buy_exchange, buy_order['id'], buy_symbol)
@@ -257,15 +275,18 @@ async def monitor_order(exchange, order_id, symbol, timeout=60):
             if order['status'] == 'closed':
                 return True
             elif order['status'] == 'canceled':
-                logging.warning(f"Order {order_id} on {
-                                exchange.id} was canceled.")
+                logging.warning(
+                    f"Order {order_id} on {exchange.id} was canceled."
+                )
                 return False
         except Exception as e:
-            logging.error(f"Error fetching order status {order_id} on {
-                          exchange.id}: {type(e).__name__} - {e}")
+            logging.error(
+                f"Error fetching order status {order_id} on {exchange.id}: {type(e).__name__} - {e}"
+            )
         await asyncio.sleep(5)
-    logging.warning(f"Order {order_id} on {
-                    exchange.id} not filled within timeout.")
+    logging.warning(
+        f"Order {order_id} on {exchange.id} not filled within timeout."
+    )
     return False
 
 
@@ -324,8 +345,9 @@ async def main():
                 logging.info("No arbitrage opportunities at this time.")
             await asyncio.sleep(check_interval)
     except Exception as e:
-        logging.error(f"An error occurred in the main loop: {
-                      type(e).__name__} - {e}")
+        logging.error(
+            f"An error occurred in the main loop: {type(e).__name__} - {e}"
+        )
     finally:
         await close_exchanges(exchanges)
 

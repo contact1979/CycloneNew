@@ -19,10 +19,12 @@ if not os.path.exists(LOG_DIR):
 
 # Set up logging
 logging.basicConfig(
-    filename=os.path.join(LOG_DIR, f'data_collection_{
-                          datetime.now().strftime("%Y%m%d_%H%M%S")}.log'),
+    filename=os.path.join(
+        LOG_DIR,
+        f"data_collection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    ),
     level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
+    format="%(asctime)s [%(levelname)s] %(message)s",
 )
 
 # Add a console handler to see logs in real-time
@@ -81,8 +83,9 @@ def collect_data():
             timeframe = '1m'
             limit = 1000
 
-            logging.info(f"Fetching data from {
-                         exchange_id} for {ex_symbol}...")
+            logging.info(
+                f"Fetching data from {exchange_id} for {ex_symbol}..."
+            )
             logging.info(f"Start date: {start_date}, End date: {end_date}")
 
             while since < end_time:
@@ -90,8 +93,9 @@ def collect_data():
                     ohlcv = exchange.fetch_ohlcv(
                         ex_symbol, timeframe=timeframe, since=since, limit=limit)
                     if not ohlcv:
-                        logging.warning(f"No OHLCV data returned for {
-                                        exchange_id} at timestamp {since}")
+                        logging.warning(
+                            f"No OHLCV data returned for {exchange_id} at timestamp {since}"
+                        )
                         break
 
                     for entry in ohlcv:
@@ -109,30 +113,33 @@ def collect_data():
 
                     since = ohlcv[-1][0] + \
                         exchange.parse_timeframe(timeframe) * 1000
-                    logging.info(f"Fetched data for {exchange_id} up to {
-                                 datetime.fromtimestamp(since / 1000, timezone.utc)}")
+                    logging.info(
+                        f"Fetched data for {exchange_id} up to {datetime.fromtimestamp(since / 1000, timezone.utc)}"
+                    )
                     time.sleep(exchange.rateLimit / 1000)
 
                 except Exception as e:
-                    logging.error(f"Error fetching data from {
-                                  exchange_id} at timestamp {since}: {e}")
+                    logging.error(
+                        f"Error fetching data from {exchange_id} at timestamp {since}: {e}"
+                    )
                     break
 
             if all_tickers:
                 df = pd.DataFrame(all_tickers)
                 df.set_index('timestamp', inplace=True)
 
-                filename = f"{
-                    DATA_DIR}/{exchange_id}_{ex_symbol.replace('/', '')}.csv"
+                filename = f"{DATA_DIR}/{exchange_id}_{ex_symbol.replace('/', '')}.csv"
                 df.to_csv(filename)
-                logging.info(f"Data saved to {
-                             filename}. Total records: {len(df)}")
+                logging.info(
+                    f"Data saved to {filename}. Total records: {len(df)}"
+                )
             else:
                 logging.warning(f"No data collected for {exchange_id}")
 
         except Exception as e:
-            logging.error(f"Unexpected error collecting data from {
-                          exchange_id}: {e}")
+            logging.error(
+                f"Unexpected error collecting data from {exchange_id}: {e}"
+            )
             continue
 
         logging.info(f"Completed data collection for {exchange_id}")
