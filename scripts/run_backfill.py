@@ -18,8 +18,8 @@ if project_root not in sys.path:
     print(f"Added project root to sys.path: {project_root}")
 
 # Import project modules
-import config
-from database import db_utils
+from hydrobot import config
+from hydrobot.database import db_utils
 from data_collection import binance_client, reddit_client, twitter_client
 from sentiment_analysis import analyzer
 # Import the sentiment job logic helper from scheduler

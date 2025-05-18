@@ -5,25 +5,20 @@ import os
 from typing import Optional
 
 # Core imports
-from config.settings import get_config, AppSettings
-from utils.logger_setup import get_logger
-from trading.position_manager import PositionManager
-from strategies.strategy_manager import StrategyManager
-from trading.risk_controller import RiskController
-from trading.order_executor import OrderExecutor
-from trader import TradingManager
+from hydrobot.config.settings import get_config, AppSettings
+from hydrobot.utils.logger_setup import get_logger
+from hydrobot.trading.position_manager import PositionManager
+from hydrobot.strategies.strategy_manager import StrategyManager
+from hydrobot.trading.risk_controller import RiskController
+from hydrobot.trading.order_executor import OrderExecutor
+from hydrobot.trader import TradingManager
 # Placeholder for data stream:
 # from data.market_data_stream import MarketDataStream
 
 # Ensure the project root is in the Python path if running main.py directly
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
-    # If hydrobot2 is a subfolder, add the parent folder
-    if os.path.basename(project_root) == 'hydrobot2':
-        sys.path.insert(0, os.path.dirname(project_root))
-    else:
-        # Assume running from root where hydrobot2 folder exists
-        sys.path.insert(0, project_root)
+    sys.path.insert(0, project_root)
 
 log = get_logger()  # Get the logger instance
 
