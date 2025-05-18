@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Dict, Optional, Literal
 
 from hydrobot.utils.logger_setup import get_logger
@@ -31,6 +32,34 @@ class Signal:
     take_profit_price: Optional[float] = None # Suggested take-profit level
     strategy_name: str = "BaseStrategy" # Name of the strategy generating the signal
     meta: Dict[str, Any] = field(default_factory=dict) # Extra info (e.g., indicators, reasons)
+    # Additional attributes used by tests or other simplified components
+    timestamp: Optional[datetime] = None
+    side: Optional[str] = None
+    size: Optional[float] = None
+    type: Optional[str] = None
+    time_in_force: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Synchronize duplicate attribute names for backward compatibility."""
+        # Allow using either 'metadata' or 'meta'
+        if self.metadata and not self.meta:
+            self.meta = self.metadata
+        elif self.meta and not self.metadata:
+            self.metadata = self.meta
+        # Map size <-> quantity
+        if self.size is not None and self.quantity is None:
+            self.quantity = self.size
+        elif self.quantity is not None and self.size is None:
+            self.size = self.quantity
+        # Map side <-> action for simple BUY/SELL
+        if self.side and self.action == "HOLD":
+            if self.side.lower() == "buy":
+                self.action = "BUY"
+            elif self.side.lower() == "sell":
+                self.action = "SELL"
+        elif self.action != "HOLD" and not self.side:
+            self.side = self.action.lower()
 
     def __str__(self):
         """Provides a readable string representation of the signal."""
