@@ -60,6 +60,12 @@ class ScalpingStrategySettings(BaseModel):
     max_position_size_usd: float = Field(100.0, description="Maximum size of a single position in USD.")
     confidence_threshold: Optional[float] = Field(0.6, description="Minimum model confidence score needed to trade (if model is used).")
 
+# --- Momentum Strategy Specific Settings ---
+class MomentumStrategySettings(BaseModel):
+    """Parameters for a simple moving average crossover momentum strategy."""
+    short_window: int = Field(10, description="Short moving average window size.")
+    long_window: int = Field(30, description="Long moving average window size.")
+
 # --- Strategy Manager Settings ---
 class StrategyManagerSettings(BaseModel):
     """Settings for how strategies are selected and managed."""
@@ -96,6 +102,7 @@ class AppSettings(BaseModel):
     risk: RiskSettings = Field(default_factory=RiskSettings)
     strategy_manager: StrategyManagerSettings = Field(default_factory=StrategyManagerSettings)
     scalping_strategy: ScalpingStrategySettings = Field(default_factory=ScalpingStrategySettings)
+    momentum_strategy: MomentumStrategySettings = Field(default_factory=MomentumStrategySettings)
     model_inference: Optional[ModelInferenceSettings] = Field(default_factory=ModelInferenceSettings) # Optional for now
     redis: RedisSettings = Field(default_factory=RedisSettings)
 

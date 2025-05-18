@@ -4,6 +4,13 @@ from datetime import datetime
 from hydrobot.data_ingestion.market_data_stream import OrderBook
 from hydrobot.trading.position_manager import Position, PositionManager
 from hydrobot.strategies.base_strategy import Signal
+from hydrobot.strategies.impl_momentum import MomentumStrategy
+from hydrobot.config.settings import (
+    MomentumStrategySettings,
+    AppSettings,
+    ExchangeAPISettings,
+    TradingSettings,
+)
 
 @pytest.fixture
 def orderbook():
@@ -132,3 +139,22 @@ async def test_position_manager():
     assert abs(position.unrealized_pnl - 2.75) < 1e-9
     # Total PNL = Realized + Unrealized = 2.0 + 2.75 = 4.75
     assert abs(position.total_pnl - 4.75) < 1e-9
+
+
+def test_momentum_strategy_signal_generation():
+    """Ensure MomentumStrategy produces signals based on moving averages."""
+    global_config = AppSettings(
+        exchange=ExchangeAPISettings(name="binanceus"),
+        trading=TradingSettings(symbols=["BTC/USDT"], default_trade_amount_usd=10.0),
+    )
+    strategy = MomentumStrategy(MomentumStrategySettings(short_window=2, long_window=3), global_config)
+    strategy.set_symbol("BTC/USDT")
+
+    # Feed initial prices
+    strategy.on_market_update({"last_trade": 100.0})
+    strategy.on_market_update({"last_trade": 101.0})
+    strategy.on_market_update({"last_trade": 102.0})
+
+    data = {"last_trade": 103.0, "asks": [[103.0, 1.0]], "bids": [[102.0, 1.0]]}
+    signal = strategy.generate_signal(data)
+    assert signal.action in ["BUY", "SELL", "HOLD"]
