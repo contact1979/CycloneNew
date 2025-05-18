@@ -3,8 +3,10 @@
 import json
 import time
 import math # For isnan
+from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Tuple, TYPE_CHECKING
+from typing import Dict, Optional, Tuple, Any, TYPE_CHECKING
+
 try:
     import redis  # type: ignore
 except ImportError:  # pragma: no cover
@@ -165,8 +167,8 @@ class PositionManager:
                         log.exception(f"Failed to load/parse position for key {key}: {e}")
         except Exception as e:
             log.exception(f"Error scanning/loading positions from Redis: {e}")
-        log.info(f"Finished loading from Redis. Loaded {loaded_count} positions.")
-
+            log.info(f"Finished loading from Redis. Loaded {loaded_count} positions.")
+        
     def update_position_on_fill(self, symbol: str, quantity: float, price: float, timestamp: float):
         """Updates the position for a symbol based on an executed trade (fill)."""
         if symbol not in self.positions:
@@ -174,6 +176,34 @@ class PositionManager:
         position = self.positions[symbol]
         position.update_position(fill_quantity=quantity, fill_price=price, timestamp=timestamp)
         self._save_position_to_redis(position)
+    
+    def update_position(self, symbol: str, trade: Dict[str, Any], current_price: float) -> Position:
+        """Updates position based on a trade dictionary and current market price.
+        Compatible with the test_position_manager test."""
+        if symbol not in self.positions:
+            self.positions[symbol] = Position(symbol=symbol)
+            
+        # Extract trade details
+        quantity = trade.get("size", 0.0)
+        price = trade.get("price", 0.0)
+        timestamp = trade.get("timestamp", datetime.utcnow()).timestamp() \
+            if isinstance(trade.get("timestamp"), datetime) else trade.get("timestamp", time.time())
+        
+        # Handle buy/sell direction
+        side = trade.get("side", "").lower()
+        if side == "sell":
+            quantity = -abs(quantity)  # Ensure negative for sells
+        else:  # Default to buy
+            quantity = abs(quantity)  # Ensure positive for buys
+            
+        # Update the position
+        self.update_position_on_fill(symbol, quantity, price, timestamp)
+        
+        # Update current price for display/calculations
+        position = self.positions[symbol]
+        position.current_price = current_price
+        
+        return position
 
     def get_position(self, symbol: str) -> Optional[Position]:
         """Retrieves the current position object for a given symbol."""
