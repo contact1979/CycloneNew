@@ -192,3 +192,4 @@ class PositionManager:
         # Placeholder for adding free quote currency balance
         log.debug(f"Calculated portfolio asset value: {total_value:.2f} {quote_currency}")
         return total_value
+

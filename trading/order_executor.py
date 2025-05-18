@@ -207,3 +207,4 @@ class OrderExecutor:
          if not self.is_initialized: raise OrderExecutionError("Exchange not initialized.")
          log.warning(f"!!! SIMULATING FETCH STATUS {order_id} !!!")
          return {'id': order_id, 'status': 'open', 'symbol': symbol or 'UNKNOWN', 'info': {'simulated_fetch': True}}
+
