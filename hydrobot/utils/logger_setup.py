@@ -4,19 +4,16 @@ import logging
 import logging.handlers
 import os
 import sys
-# --- FIX: Use relative import ---
-from ..config.settings import get_config # Use the helper function
 
-# --- Configuration ---
+# --- Configuration using environment variables or defaults ---
+LOG_LEVEL = os.environ.get("HYDROBOT_LOG_LEVEL", "INFO").upper()
+LOG_DIR = os.environ.get("HYDROBOT_LOG_DIR", "logs")
+APP_NAME = os.environ.get("HYDROBOT_APP_NAME", "hydrobot").lower().replace(" ", "_")
+LOG_FILENAME = os.path.join(LOG_DIR, f"{APP_NAME}.log")
+
+# Create log directory if it doesn't exist
 try:
-    CONFIG = get_config()
-    # Make sure CONFIG is not None before accessing attributes
-    if CONFIG is None:
-        raise ValueError("Configuration object is None")
-    LOG_LEVEL = CONFIG.log_level.upper() # Get log level from config
-    LOG_DIR = CONFIG.paths.log_dir         # Get log directory from config
-    APP_NAME = CONFIG.app_name.lower().replace(" ", "_") # Use app name for log file
-    LOG_FILENAME = os.path.join(LOG_DIR, f"{APP_NAME}.log")
+    os.makedirs(LOG_DIR, exist_ok=True)
 except Exception as e:
     # Fallback if config loading fails during setup
     logging.basicConfig(level=logging.WARNING) # Basic config as fallback
@@ -62,4 +59,14 @@ else:
 
 def get_logger(name: str = APP_NAME) -> logging.Logger:
     """Returns the configured logger instance."""
+    # Dynamically import settings to avoid circular dependency
+    # Only use settings for app_name override if explicitly requested
+    if name == APP_NAME:
+        try:
+            from ..config.settings import settings
+            if settings and hasattr(settings, 'app_name'):
+                return logging.getLogger(settings.app_name)
+        except (ImportError, AttributeError):
+            # If settings import fails, just use the default name
+            pass
     return logging.getLogger(name)

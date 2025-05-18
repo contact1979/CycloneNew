@@ -1,11 +1,14 @@
 """Simple mean reversion strategy using rolling mean and standard deviation."""
 
 from collections import deque
-from typing import Deque, Dict, Any, Optional
+from typing import Deque, Dict, Any, Optional, TYPE_CHECKING
 
 from .base_strategy import Strategy, Signal
-from ..config.settings import AppSettings
 from ..utils.logger_setup import get_logger
+from .strategy_settings import MeanReversionStrategySettings
+
+if TYPE_CHECKING:
+    from ..config.settings import AppSettings
 
 log = get_logger()
 
@@ -13,7 +16,7 @@ log = get_logger()
 class MeanReversionStrategy(Strategy):
     """Mean reversion strategy based on z-score of recent prices."""
 
-    def __init__(self, strategy_config: Dict[str, Any], global_config: AppSettings):
+    def __init__(self, strategy_config: MeanReversionStrategySettings, global_config: 'AppSettings'):
         super().__init__(strategy_config, global_config)
         self.window_size = int(strategy_config.get("window_size", 20))
         self.std_dev_threshold = float(strategy_config.get("std_dev_threshold", 1.5))

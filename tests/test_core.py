@@ -33,11 +33,10 @@ def position():
         symbol="BTC/USDT",
         size=0.1,
         entry_price=100.0,
-        realized_pnl=0.0,
-        unrealized_pnl=0.0,
-        total_pnl=0.0,
-        trades=[],
-        timestamp=datetime.utcnow()
+        quantity=0.1,
+        average_entry_price=100.0,
+        current_price=110.0,
+        last_update_time=datetime.utcnow().timestamp()
     )
 
 @pytest.fixture

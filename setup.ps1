@@ -12,6 +12,12 @@ if (!(Test-Path "./venv")) {
 .\venv\Scripts\activate
 
 # Install all dependencies with Poetry, including dev tools
-poetry install --with dev
+if (Get-Command poetry -ErrorAction SilentlyContinue) {
+    poetry install --with dev
+} else {
+    # Fallback if Poetry isn't available
+    pip install -r requirements.txt
+    pip install -r dev-requirements.txt
+}
 
-Write-Host "✅ Env ready. Run tests with: poetry run pytest -q"
+Write-Host "✅ Env ready. Run tests with: python -m pytest -q"

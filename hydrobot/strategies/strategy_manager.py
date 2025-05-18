@@ -4,7 +4,7 @@ import importlib
 import pkgutil
 import inspect
 import os
-from typing import Dict, Type, Optional, Any
+from typing import Dict, Type, Optional, Any, TYPE_CHECKING
 
 # --- FIX: Use relative imports ---
 # Import the base class and specific strategies to ensure they are recognized
@@ -14,8 +14,10 @@ from .impl_momentum import MomentumStrategy
 from .impl_mean_reversion import MeanReversionStrategy
 from .impl_vwap import VWAPStrategy
 
-from ..config.settings import get_config, AppSettings, StrategyManagerSettings
 from ..utils.logger_setup import get_logger
+
+if TYPE_CHECKING:
+    from ..config.settings import AppSettings, StrategyManagerSettings
 
 log = get_logger()
 

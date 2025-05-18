@@ -5,10 +5,13 @@ import time
 import math # For isnan checks potentially
 
 # --- FIX: Use relative imports ---
-from .base_strategy import Strategy, Signal, SignalAction
+from .base_strategy import Strategy, Signal
 from ..utils.logger_setup import get_logger
-# Import specific config model from relative path
-from ..config.settings import ScalpingStrategySettings, AppSettings # Import AppSettings for global config type hint
+# Import from strategy_settings, not from config.settings
+from .strategy_settings import StrategySettings, ScalpingStrategySettings
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..config.settings import AppSettings
 
 log = get_logger()
 

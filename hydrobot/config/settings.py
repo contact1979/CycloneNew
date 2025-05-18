@@ -5,6 +5,7 @@
 import os
 from pydantic import BaseModel, Field, SecretStr, validator
 from typing import List, Optional, Dict, Any
+from ..strategies.strategy_settings import StrategySettings
 try:
     import yaml
 except ImportError:  # pragma: no cover - optional dependency
@@ -51,7 +52,7 @@ class RiskSettings(BaseModel):
     take_profit_pct: Optional[float] = Field(0.04, description="Default take profit percentage (4%). Set to None to disable.")
 
 # --- Scalping Strategy Specific Settings ---
-class ScalpingStrategySettings(BaseModel):
+class ScalpingStrategySettings(StrategySettings):
     """Parameters specific to the Scalping strategy."""
     min_spread_pct: float = Field(0.001, description="Minimum bid-ask spread percentage required to consider a trade.")
     min_imbalance: float = Field(1.5, description="Minimum order book imbalance ratio required.")
@@ -61,13 +62,13 @@ class ScalpingStrategySettings(BaseModel):
     confidence_threshold: Optional[float] = Field(0.6, description="Minimum model confidence score needed to trade (if model is used).")
 
 # --- Momentum Strategy Specific Settings ---
-class MomentumStrategySettings(BaseModel):
+class MomentumStrategySettings(StrategySettings):
     """Parameters for a simple moving average crossover momentum strategy."""
     short_window: int = Field(10, description="Short moving average window size.")
     long_window: int = Field(30, description="Long moving average window size.")
 
 # --- Mean Reversion Strategy Settings ---
-class MeanReversionStrategySettings(BaseModel):
+class MeanReversionStrategySettings(StrategySettings):
     """Parameters for a basic mean reversion strategy."""
     window_size: int = Field(20, description="Rolling window size for mean calculation.")
     std_dev_threshold: float = Field(
@@ -76,7 +77,7 @@ class MeanReversionStrategySettings(BaseModel):
     )
 
 # --- VWAP Strategy Settings ---
-class VWAPStrategySettings(BaseModel):
+class VWAPStrategySettings(StrategySettings):
     """Parameters for VWAP-based strategy."""
     window_size: int = Field(20, description="Rolling window size for VWAP calculation.")
     deviation_threshold: float = Field(
@@ -109,7 +110,7 @@ class RedisSettings(BaseModel):
 # --- Main Application Settings ---
 class AppSettings(BaseModel):
     """Root configuration model bringing all settings together."""
-    app_name: str = Field("HydroBot2", description="Name of the application.")
+    app_name: str = Field("HydroBot", description="Name of the application.")
     environment: str = Field("development", description="Runtime environment (e.g., 'development', 'production').")
     log_level: str = Field("INFO", description="Logging level (e.g., 'DEBUG', 'INFO', 'WARNING', 'ERROR').")
 
@@ -244,5 +245,5 @@ def get_config() -> AppSettings:
         raise RuntimeError("Configuration could not be loaded. Check logs for details.")
     return CONFIG
 
-# Backwards compatibility
+# Backwards compatibility - this is the main export that should be used by other modules
 settings = CONFIG

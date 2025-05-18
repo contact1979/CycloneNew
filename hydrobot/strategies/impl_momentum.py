@@ -1,11 +1,14 @@
 """Simple momentum strategy using moving average crossover."""
 
 from collections import deque
-from typing import Deque, Dict, Any, Optional
+from typing import Deque, Dict, Any, Optional, TYPE_CHECKING
 
 from .base_strategy import Strategy, Signal
-from ..config.settings import AppSettings
 from ..utils.logger_setup import get_logger
+from .strategy_settings import MomentumStrategySettings
+
+if TYPE_CHECKING:
+    from ..config.settings import AppSettings
 
 log = get_logger()
 
@@ -13,7 +16,7 @@ log = get_logger()
 class MomentumStrategy(Strategy):
     """Momentum trading strategy based on moving average crossover."""
 
-    def __init__(self, strategy_config: Dict[str, Any], global_config: AppSettings):
+    def __init__(self, strategy_config: MomentumStrategySettings, global_config: 'AppSettings'):
         super().__init__(strategy_config, global_config)
         self.short_window = int(strategy_config.get("short_window", 10))
         self.long_window = int(strategy_config.get("long_window", 30))

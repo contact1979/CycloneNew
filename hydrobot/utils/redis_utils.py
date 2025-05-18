@@ -1,14 +1,23 @@
 """Redis utilities for real-time updates and message passing."""
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, TYPE_CHECKING
+
 try:
     import aioredis  # type: ignore
 except ImportError:  # pragma: no cover - optional
     aioredis = None
-from hydrobot.config.settings import settings
+
 from hydrobot.utils.logger_setup import get_logger
 
 log = get_logger(__name__)
+
+# Lazy import of settings to avoid circular dependencies
+def get_settings():
+    from hydrobot.config.settings import settings
+    return settings
+
+if TYPE_CHECKING:
+    from hydrobot.config.settings import RedisSettings
 
 class RedisPublisher:
     """Handles publishing updates to Redis channels."""
@@ -17,7 +26,7 @@ class RedisPublisher:
         """Initialize Redis publisher."""
         self.redis: Optional[aioredis.Redis] = None
         self._connected = False
-
+        
     async def connect(self) -> bool:
         """Connect to Redis server.
         
@@ -28,13 +37,14 @@ class RedisPublisher:
             log.warning("aioredis not installed; Redis features disabled")
             return False
         try:
-            redis_url = f"redis://{settings.redis.HOST}:{settings.redis.PORT}"
-            if settings.redis.PASSWORD:
-                redis_url = f"redis://:{settings.redis.PASSWORD.get_secret_value()}@{settings.redis.HOST}:{settings.redis.PORT}"
+            settings = get_settings()  # Get settings dynamically
+            redis_url = f"redis://{settings.redis.host}:{settings.redis.port}"
+            if settings.redis.password:
+                redis_url = f"redis://:{settings.redis.password.get_secret_value()}@{settings.redis.host}:{settings.redis.port}"
 
             self.redis = await aioredis.from_url(
                 redis_url,
-                db=settings.redis.DB,
+                db=settings.redis.db,
                 encoding="utf-8",
                 decode_responses=True
             )

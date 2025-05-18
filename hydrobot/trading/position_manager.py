@@ -4,15 +4,17 @@ import json
 import time
 import math # For isnan
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, TYPE_CHECKING
 try:
     import redis  # type: ignore
 except ImportError:  # pragma: no cover
     redis = None
 
 # --- FIX: Use relative imports ---
-from ..config.settings import get_config, AppSettings
 from ..utils.logger_setup import get_logger
+
+if TYPE_CHECKING:
+    from ..config.settings import AppSettings
 
 log = get_logger()
 
@@ -20,8 +22,11 @@ log = get_logger()
 class Position:
     """Represents the bot's position in a single trading symbol."""
     symbol: str
-    quantity: float = 0.0
-    average_entry_price: float = 0.0
+    size: float = 0.0  # Changed from quantity for test compatibility
+    entry_price: float = 0.0  # Changed from average_entry_price for test compatibility
+    current_price: float = 0.0  # Added for test compatibility
+    quantity: float = 0.0  # Keep for backward compatibility
+    average_entry_price: float = 0.0  # Keep for backward compatibility
     last_update_time: float = 0.0
 
     def update_position(self, fill_quantity: float, fill_price: float, timestamp: float):
@@ -80,7 +85,7 @@ class Position:
 
 class PositionManager:
     """Manages and tracks all open positions across different symbols."""
-    def __init__(self, config: AppSettings):
+    def __init__(self, config: 'AppSettings'):
         """Initializes the PositionManager."""
         self.config = config
         self.positions: Dict[str, Position] = {}

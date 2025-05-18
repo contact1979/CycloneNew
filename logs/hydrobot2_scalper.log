@@ -1,0 +1,14 @@
+2025-05-18 04:41:29 - hydrobot2_scalper - INFO - [logger_setup.py:55] - File logging configured to: logs\hydrobot2_scalper.log
+2025-05-18 04:41:29 - hydrobot2_scalper - INFO - [logger_setup.py:58] - Logger 'hydrobot2_scalper' initialized with level INFO.
+2025-05-18 04:41:29 - hydrobot2_scalper - INFO - [logger_setup.py:59] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 04:43:16 - hydrobot2_scalper - INFO - [logger_setup.py:55] - File logging configured to: logs\hydrobot2_scalper.log
+2025-05-18 04:43:16 - hydrobot2_scalper - INFO - [logger_setup.py:58] - Logger 'hydrobot2_scalper' initialized with level INFO.
+2025-05-18 04:43:16 - hydrobot2_scalper - INFO - [logger_setup.py:59] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 04:43:19 - hydrobot2_scalper - INFO - [base_strategy.py:71] - Initialized strategy: MomentumStrategy
+2025-05-18 04:43:19 - hydrobot2_scalper - INFO - [base_strategy.py:71] - Initialized strategy: MeanReversionStrategy
+2025-05-18 04:43:19 - hydrobot2_scalper - INFO - [base_strategy.py:71] - Initialized strategy: VWAPStrategy
+2025-05-18 04:43:19 - hydrobot2_scalper - INFO - [impl_vwap.py:22] - VWAP strategy initialized: window_size=3, deviation_threshold=0.001
+2025-05-18 04:43:19 - hydrobot2_scalper - INFO - [base_strategy.py:77] - Strategy 'VWAPStrategy' assigned to symbol: BTC/USDT
+2025-05-18 04:43:19 - hydrobot2_scalper - WARNING - [trading_utils.py:134] - [BTC/USDT] FAIL Min Size: Qty 0.0 < Min Amount 0.001.
+2025-05-18 04:43:19 - hydrobot2_scalper - WARNING - [trading_utils.py:134] - [BTC/USDT] FAIL Min Size: Qty 0.0001 < Min Amount 0.001.
+2025-05-18 04:43:19 - hydrobot2_scalper - WARNING - [trading_utils.py:144] - [BTC/USDT] FAIL Min Size: Cost 0.5000 < Min Cost 10.
