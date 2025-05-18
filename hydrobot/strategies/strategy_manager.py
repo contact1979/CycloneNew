@@ -11,7 +11,7 @@ from typing import Dict, Type, Optional, Any
 from .base_strategy import Strategy
 from .impl_scalping import ScalpingStrategy
 from .impl_momentum import MomentumStrategy
-# from .impl_mean_reversion import MeanReversionStrategy
+from .impl_mean_reversion import MeanReversionStrategy
 
 from ..config.settings import get_config, AppSettings, StrategyManagerSettings
 from ..utils.logger_setup import get_logger
@@ -58,6 +58,9 @@ class StrategyManager:
         if "MomentumStrategy" not in strategies and MomentumStrategy:
              strategies["MomentumStrategy"] = MomentumStrategy
              log.debug("Explicitly added MomentumStrategy.")
+        if "MeanReversionStrategy" not in strategies and MeanReversionStrategy:
+             strategies["MeanReversionStrategy"] = MeanReversionStrategy
+             log.debug("Explicitly added MeanReversionStrategy.")
 
         if not strategies:
              log.warning("No strategy classes were automatically discovered!")
