@@ -8,9 +8,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: |
-          if [ -f dev-requirements.txt ]; then
-            pip install -r dev-requirements.txt
-          fi
-      - run: python -m pytest -q
+      - run: poetry install --with dev
+      - run: poetry run pytest -q

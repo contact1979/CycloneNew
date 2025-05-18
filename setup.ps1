@@ -11,14 +11,7 @@ if (!(Test-Path "./venv")) {
 
 .\venv\Scripts\activate
 
-# Install runtime dependencies
-pip install -r requirements.txt
+# Install all dependencies with Poetry, including dev tools
+poetry install --with dev
 
-# Install dev tooling
-if (Test-Path "./dev-requirements.txt") {
-    pip install -r dev-requirements.txt
-} else {
-    pip install pytest coverage mypy
-}
-
-Write-Host "✅ Env ready. Run tests with: python -m pytest -q"
+Write-Host "✅ Env ready. Run tests with: poetry run pytest -q"
