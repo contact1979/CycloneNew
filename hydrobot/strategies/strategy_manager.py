@@ -12,6 +12,7 @@ from .base_strategy import Strategy
 from .impl_scalping import ScalpingStrategy
 from .impl_momentum import MomentumStrategy
 from .impl_mean_reversion import MeanReversionStrategy
+from .impl_vwap import VWAPStrategy
 
 from ..config.settings import get_config, AppSettings, StrategyManagerSettings
 from ..utils.logger_setup import get_logger
@@ -61,6 +62,9 @@ class StrategyManager:
         if "MeanReversionStrategy" not in strategies and MeanReversionStrategy:
              strategies["MeanReversionStrategy"] = MeanReversionStrategy
              log.debug("Explicitly added MeanReversionStrategy.")
+        if "VWAPStrategy" not in strategies and VWAPStrategy:
+             strategies["VWAPStrategy"] = VWAPStrategy
+             log.debug("Explicitly added VWAPStrategy.")
 
         if not strategies:
              log.warning("No strategy classes were automatically discovered!")

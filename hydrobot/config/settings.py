@@ -75,6 +75,14 @@ class MeanReversionStrategySettings(BaseModel):
         description="Standard deviation multiplier for entry/exit thresholds.",
     )
 
+# --- VWAP Strategy Settings ---
+class VWAPStrategySettings(BaseModel):
+    """Parameters for VWAP-based strategy."""
+    window_size: int = Field(20, description="Rolling window size for VWAP calculation.")
+    deviation_threshold: float = Field(
+        0.002, description="Fractional deviation from VWAP required to trigger a trade."
+    )
+
 # --- Strategy Manager Settings ---
 class StrategyManagerSettings(BaseModel):
     """Settings for how strategies are selected and managed."""
@@ -115,6 +123,7 @@ class AppSettings(BaseModel):
     mean_reversion_strategy: MeanReversionStrategySettings = Field(
         default_factory=MeanReversionStrategySettings
     )
+    vwap_strategy: VWAPStrategySettings = Field(default_factory=VWAPStrategySettings)
     model_inference: Optional[ModelInferenceSettings] = Field(default_factory=ModelInferenceSettings) # Optional for now
     redis: RedisSettings = Field(default_factory=RedisSettings)
 
