@@ -1,7 +1,14 @@
 """Market data ingestion utilities."""
 
-from .market_data_stream import OrderBook, MarketDataStream
-from .data_loader import HistoricalDataLoader
+try:
+    from .market_data_stream import OrderBook, MarketDataStream
+except Exception:  # pragma: no cover - optional deps
+    OrderBook = MarketDataStream = None
+
+try:
+    from .data_loader import HistoricalDataLoader
+except Exception:  # pragma: no cover - optional deps
+    HistoricalDataLoader = None
 
 __all__ = [
     "OrderBook",

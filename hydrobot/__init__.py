@@ -9,6 +9,6 @@ __version__ = '0.2.0'
 __author__ = 'HydroBot Contributors'
 
 from .config.settings import settings
-from .utils.logger_setup import get_logger, setup_logging
+from .utils.logger_setup import get_logger
 
-__all__ = ['settings', 'get_logger', 'setup_logging']
+__all__ = ['settings', 'get_logger']

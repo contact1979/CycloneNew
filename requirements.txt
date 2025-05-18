@@ -1,6 +1,6 @@
-pandas
-numpy
-requests
-ccxt
-scipy
-matplotlib
+pydantic
+pyyaml
+aiohttp
+websockets
+redis
+prometheus_client

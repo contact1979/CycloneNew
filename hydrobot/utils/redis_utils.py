@@ -1,7 +1,10 @@
 """Redis utilities for real-time updates and message passing."""
 import json
 from typing import Any, Dict, Optional
-import aioredis
+try:
+    import aioredis  # type: ignore
+except ImportError:  # pragma: no cover - optional
+    aioredis = None
 from hydrobot.config.settings import settings
 from hydrobot.utils.logger_setup import get_logger
 
@@ -21,11 +24,14 @@ class RedisPublisher:
         Returns:
             True if connection successful
         """
+        if aioredis is None:
+            log.warning("aioredis not installed; Redis features disabled")
+            return False
         try:
             redis_url = f"redis://{settings.redis.HOST}:{settings.redis.PORT}"
             if settings.redis.PASSWORD:
                 redis_url = f"redis://:{settings.redis.PASSWORD.get_secret_value()}@{settings.redis.HOST}:{settings.redis.PORT}"
-            
+
             self.redis = await aioredis.from_url(
                 redis_url,
                 db=settings.redis.DB,
@@ -35,7 +41,7 @@ class RedisPublisher:
             self._connected = True
             log.info("Connected to Redis")
             return True
-            
+
         except Exception as e:
             log.error("Redis connection failed", error=str(e))
             return False
@@ -71,4 +77,4 @@ class RedisPublisher:
         """Close Redis connection."""
         if self.redis:
             await self.redis.close()
-            self._connected = False
+        self._connected = False

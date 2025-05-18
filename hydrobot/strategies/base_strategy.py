@@ -3,7 +3,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Literal
-import pandas as pd
 
 from hydrobot.utils.logger_setup import get_logger
 

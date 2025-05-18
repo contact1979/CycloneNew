@@ -4,11 +4,14 @@ Handles real-time market data aggregation, orderbook management,
 and trade feed processing with efficient data structures and async I/O.
 """
 import asyncio
-import aiohttp
+try:
+    import aiohttp
+except ImportError:  # pragma: no cover - optional dependency
+    aiohttp = None
 import json
 from typing import Dict, Any, List, Optional, Callable
 from datetime import datetime
-import numpy as np
+from statistics import pstdev
 from collections import deque
 from hydrobot.utils.logger_setup import get_logger
 from hydrobot.utils.metrics import (
@@ -166,8 +169,8 @@ class TradeBuffer:
         
         if len(prices) < 2:
             return None
-        
-        return np.std(prices)
+
+        return pstdev(prices)
 
 class MarketDataStream:
     """Market data stream processor with async I/O."""
@@ -205,6 +208,8 @@ class MarketDataStream:
         Args:
             symbols: Trading pair symbols
         """
+        if aiohttp is None:
+            raise RuntimeError("aiohttp is required for streaming functionality")
         # Create async session
         self._session = aiohttp.ClientSession()
         
@@ -297,6 +302,10 @@ class MarketDataStream:
             url: Websocket URL
             subscribe_msg: Subscription message
         """
+        if aiohttp is None:
+            logger.error("aiohttp is required for websocket connections")
+            return
+
         while self._running:
             try:
                 async with self._session.ws_connect(url) as ws:
