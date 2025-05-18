@@ -7,7 +7,7 @@ import pandas as pd
 import logging # Added logging import
 
 # Use absolute imports assuming 'cyclonev2' is the project root added to PYTHONPATH
-import config # To display default config values
+from hydrobot import config  # To display default config values
 # Use relative imports for modules within the same package
 from . import data_provider # To get initial dropdown options
 # from .. import config

@@ -2,9 +2,9 @@
 import pytest
 from datetime import datetime
 import numpy as np
-from hft_scalping_bot.data_ingestion.market_data_stream import OrderBook
-from hft_scalping_bot.risk_management.position_manager import Position, PositionManager
-from hft_scalping_bot.strategies.base_strategy import Signal
+from hydrobot.data_ingestion.market_data_stream import OrderBook
+from hydrobot.trading.position_manager import Position, PositionManager
+from hydrobot.strategies.base_strategy import Signal
 
 @pytest.fixture
 def orderbook():

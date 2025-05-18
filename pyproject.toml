@@ -5,7 +5,7 @@ description = "High-frequency trading bot with ML-powered market prediction"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "hft_scalping_bot"}]
+packages = [{include = "hydrobot"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -68,4 +68,4 @@ warn_unreachable = true
 asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --cov=hft_scalping_bot --cov-report=term-missing"
+addopts = "-v --cov=hydrobot --cov-report=term-missing"

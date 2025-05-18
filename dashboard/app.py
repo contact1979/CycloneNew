@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Use absolute imports assuming 'cyclonev2' is the project root added to PYTHONPATH
-import config  # To potentially set Dash debug mode based on LOG_LEVEL
+from hydrobot import config  # To potentially set Dash debug mode based on LOG_LEVEL
 from hydrobot.dashboard.layouts import create_layout
 from hydrobot.dashboard.data_provider import dashboard_data
 from hydrobot.utils.logger_setup import get_logger
