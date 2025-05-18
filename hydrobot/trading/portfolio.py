@@ -3,6 +3,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 from ..config.settings import settings
 from ..utils.logger_setup import get_logger
+from . import trading_utils
 
 
 log = get_logger(__name__)
@@ -152,10 +153,22 @@ class PortfolioManager:
             Trade quantity
         """
         trade_capital = self.available_capital * capital_percentage
+
+        if current_price <= 0:
+            log.error(f"[{symbol}] Invalid current price {current_price} for trade quantity calculation")
+            return 0.0
+
         raw_quantity = trade_capital / current_price
-        
-        # TODO: Implement exchange-specific lot size rounding
-        return round(raw_quantity, 8)
+
+        formatted_qty = trading_utils.format_quantity(symbol, raw_quantity)
+        if formatted_qty is None:
+            formatted_qty = round(raw_quantity, 8)
+
+        if not trading_utils.check_min_order_size(symbol, formatted_qty, current_price):
+            log.warning(f"[{symbol}] Calculated trade quantity {formatted_qty} does not meet min size requirements")
+            return 0.0
+
+        return formatted_qty
 
     def calculate_total_value(
         self,
