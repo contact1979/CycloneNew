@@ -1,18 +1,6 @@
+# Start from a slim Python base image
 FROM python:3.11-slim
 
-<<<<<<< HEAD
-WORKDIR /app
-
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-CMD ["python", "main.py"]
-=======
 # Set work directory
 WORKDIR /app
 
@@ -52,4 +40,3 @@ CMD ["python", "main.py"]
 # docker run -p 8050:8050 hydrobot python dashboard/app.py
 # Or, for module entrypoint:
 # CMD ["python", "-m", "hydrobot.trader"]
->>>>>>> ca3bde8 (Refactor Dockerfile for robust production/dev use; add/fix type annotations and style in backtest.py)
