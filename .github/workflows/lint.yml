@@ -1,0 +1,14 @@
+name: Lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install black isort mypy
+      - run: black --check hydrobot tests
+      - run: isort --check-only hydrobot tests
+      - run: mypy hydrobot
