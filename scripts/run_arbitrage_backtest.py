@@ -56,7 +56,9 @@ class ArbitrageBacktester:
         self.trade_log = []
         self.position_manager = PositionManager()
         
-        logger.info(f"ArbitrageBacktester initialized with symbol {self.symbol}")    def setup_logging(self, log_level):
+        logger.info(f"ArbitrageBacktester initialized with symbol {self.symbol}")
+        
+    def setup_logging(self, log_level):
         """Setup logging configuration."""
         log_dir = 'logs'
         if not os.path.exists(log_dir):
@@ -524,7 +526,6 @@ def main():
         backtester.print_results(performance, trade_df)
         
         if args.plot and not trade_df.empty:
-            backtester.plot_results(trade_df)
-    
+            backtester.plot_results(trade_df)    
 if __name__ == "__main__":
     main()

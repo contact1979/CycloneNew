@@ -59,4 +59,5 @@ This uses the compose file lines 1-7.
 3. Optionally, configure a `.devcontainer` if you want VS Code to open a container automatically (not provided by default).
 
 ## 6. Going Live
-When comfortable with sandbox results, replace credentials with real keys in `secrets.yaml` and set `is_sandbox` to `false`. Adjust risk settings carefully before live trading.
+When comfortable with sandbox results, replace credentials with real keys in `secrets.yaml` and set `is_sandbox` to `false`.
+Adjust risk settings carefully before live trading.

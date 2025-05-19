@@ -1,15 +1,15 @@
 # backtest.py
 
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 import json
 import logging
 from datetime import datetime
 import os
 import sys
-from tabulate import tabulate
-from colorama import Back, Fore, Style, init
-from datetime import datetime
+from tabulate import tabulate  # type: ignore
+from colorama import Back, Fore, Style, init  # type: ignore
+from typing import Any, Dict, List, Mapping, Sequence, Tuple, cast
 
 init(autoreset=True)
 
@@ -31,13 +31,19 @@ logging.basicConfig(
 # Load configuration
 
 
-def load_config():
+def load_config() -> Dict[str, Any]:
     try:
         with open('config.json', 'r') as f:
-            config = json.load(f)
+            config = cast(Dict[str, Any], json.load(f))
         # Validate config parameters
-        required_keys = ['exchanges', 'symbol', 'min_profit_percent',
-                         'trade_amount', 'max_trade_amount', 'trade_currency', 'initial_balance']
+        required_keys = [
+            "exchanges",
+            "symbol",
+            "min_profit_percent",
+            "trade_amount",
+            "max_trade_amount",
+            "initial_balance",
+        ]
         for key in required_keys:
             if key not in config:
                 raise ValueError(f"Missing required config parameter: {key}")
@@ -55,8 +61,6 @@ symbol = config['symbol']
 min_profit_percent = config['min_profit_percent']
 trade_amount = config['trade_amount']
 max_trade_amount = config['max_trade_amount']
-trade_currency = config['trade_currency']
-initial_balance = config['initial_balance']
 
 # Map symbols per exchange (if needed)
 exchange_symbol_map = {
@@ -75,7 +79,10 @@ exchange_symbol_map = {
 }
 
 
-def load_historical_data(exchange_names, symbol):
+def load_historical_data(
+    exchange_names: Sequence[str],
+    symbol: str,
+) -> Dict[str, pd.DataFrame]:
     data = {}
     for exchange in exchange_names:
         ex_symbol = exchange_symbol_map.get(exchange, symbol)
@@ -90,14 +97,14 @@ def load_historical_data(exchange_names, symbol):
             data[exchange] = df
             logging.info(f"Loaded data for {exchange}")
         except FileNotFoundError:
-            logging.error(f"Data file {filename} not found.")
+            logging.error("Data file %s not found.", filename)
         except Exception as e:
             logging.error(f"Error loading data from {filename}: {e}")
     return data
 
 
-def synchronize_data(data):
-    # Merge dataframes on timestamp using outer join and forward-fill missing data
+def synchronize_data(data: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
+    # Merge on timestamp using outer join and forward fill
     df_list = []
     for ex_name, df in data.items():
         df = df[['bid', 'ask']]
@@ -111,8 +118,18 @@ def synchronize_data(data):
     return df_merged
 
 
-def calculate_profit(buy_price, sell_price, buy_fee, sell_fee, amount, slippage=0.0005):
-    # Apply slippage: buy prices get worse (higher), sell prices get worse (lower)
+def calculate_profit(
+    buy_price: float,
+    sell_price: float,
+    buy_fee: float,
+    sell_fee: float,
+    amount: float,
+    slippage: float = 0.0005,
+) -> Tuple[float, float]:
+    """Calculate profit with fees and slippage.
+    
+    Slippage applies as: buy prices get worse (higher), sell prices get worse (lower)
+    """
     buy_price_with_slip = buy_price * (1 + slippage)
     sell_price_with_slip = sell_price * (1 - slippage)
     
@@ -123,7 +140,11 @@ def calculate_profit(buy_price, sell_price, buy_fee, sell_fee, amount, slippage=
     return profit_percent, profit
 
 
-def check_arbitrage_opportunities(exchanges_config, order_books, balances):
+def check_arbitrage_opportunities(
+    exchanges_config: Mapping[str, Mapping[str, Any]],
+    order_books: Mapping[str, Mapping[str, float]],
+    balances: Mapping[str, Mapping[str, float]],
+) -> List[Dict[str, Any]]:
     opportunities = []
     exchange_names = list(order_books.keys())
     for buy_ex in exchange_names:
@@ -144,13 +165,30 @@ def check_arbitrage_opportunities(exchanges_config, order_books, balances):
 
                 if max_amount > 0:
                     profit_percent, profit = calculate_profit(
-                        buy_price, sell_price, buy_fee, sell_fee, max_amount
+                        buy_price,
+                        sell_price,
+                        buy_fee,
+                        sell_fee,
+                        max_amount,
+                        slippage=0.0005,
                     )
                     logging.debug(
-                        f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}"
+                        "Evaluated opportunity: Buy on %s at %s, "
+                        "Sell on %s at %s, Profit%%: %.4f",
+                        buy_ex,
+                        buy_price,
+                        sell_ex,
+                        sell_price,
+                        profit_percent,
                     )
                     logging.info(
-                        f"Evaluated opportunity: Buy on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}, Profit%: {profit_percent:.4f}"
+                        "Evaluated opportunity: Buy on %s at %s, "
+                        "Sell on %s at %s, Profit%%: %.4f",
+                        buy_ex,
+                        buy_price,
+                        sell_ex,
+                        sell_price,
+                        profit_percent,
                     )
                     if profit_percent >= min_profit_percent:
                         opportunity = {
@@ -167,7 +205,11 @@ def check_arbitrage_opportunities(exchanges_config, order_books, balances):
     return opportunities
 
 
-def simulate_trade(balances, opportunity, exchanges_config):
+def simulate_trade(
+    balances: Dict[str, Dict[str, float]],
+    opportunity: Mapping[str, Any],
+    exchanges_config: Mapping[str, Mapping[str, Any]],
+) -> bool:
     buy_ex = opportunity['buy_exchange']
     sell_ex = opportunity['sell_exchange']
     amount = opportunity['amount']
@@ -185,20 +227,33 @@ def simulate_trade(balances, opportunity, exchanges_config):
         balances[buy_ex]['USD'] -= cost
         balances[sell_ex]['USD'] += revenue
 
-        # We don't need to adjust BTC balances because we're buying and selling immediately
+    # No need to adjust BTC balances because buy and sell are immediate
 
         logging.info(
-            f"Trade executed: Buy {amount} BTC on {buy_ex} at {buy_price}, Sell on {sell_ex} at {sell_price}"
+            "Trade executed: Buy %s BTC on %s at %s, Sell on %s at %s",
+            amount,
+            buy_ex,
+            buy_price,
+            sell_ex,
+            sell_price,
         )
         return True
     else:
         logging.warning(
-            f"Insufficient USD balance for trade on {buy_ex}. Required: {cost}, Available: {balances[buy_ex]['USD']}"
+            "Insufficient USD balance for trade on %s. "
+            "Required: %s, Available: %s",
+            buy_ex,
+            cost,
+            balances[buy_ex]["USD"],
         )
         return False
 
 
-def backtest(df_merged, exchanges_config, initial_balance):
+def backtest(
+    df_merged: pd.DataFrame,
+    exchanges_config: Mapping[str, Mapping[str, Any]],
+    initial_balance: float,
+) -> Tuple[Dict[str, Dict[str, float]], List[Dict[str, Any]]]:
     exchange_names = df_merged.columns.levels[0]
     # Initialize balances with USD only
     balances = {ex: {'USD': initial_balance, 'BTC': 0}
@@ -228,7 +283,7 @@ def backtest(df_merged, exchanges_config, initial_balance):
     return balances, trade_log
 
 
-def calculate_advanced_metrics(trade_log_df):
+def calculate_advanced_metrics(trade_log_df: pd.DataFrame) -> Dict[str, Any]:
     df = trade_log_df.copy()
 
     avg_profit_per_trade = df['profit'].mean()
@@ -278,12 +333,16 @@ def calculate_advanced_metrics(trade_log_df):
     }
 
 
-def color_profit(value):
-    numeric_value = float(value.replace('$', '').replace('%', ''))
-    return f"{Fore.GREEN}{value}{Style.RESET_ALL}" if numeric_value > 0 else f"{Fore.RED}{value}{Style.RESET_ALL}"
+def color_profit(value: str) -> str:
+    numeric_value = float(value.replace("$", "").replace("%", ""))
+    return (
+        f"{Fore.GREEN}{value}{Style.RESET_ALL}"
+        if numeric_value > 0
+        else f"{Fore.RED}{value}{Style.RESET_ALL}"
+    )
 
 
-def main_backtest():
+def main_backtest() -> None:
     # Option to run full backtest or with specific exchanges
     if len(sys.argv) > 1 and sys.argv[1] == 'partial':
         # Run backtest with Coinbase and Bitfinex only
@@ -301,7 +360,7 @@ def main_backtest():
         return
 
     df_merged = synchronize_data(data)
-    initial_balance = config['initial_balance']
+    initial_balance = config["initial_balance"]
 
     # Run backtest
     balances, trade_log = backtest(
@@ -320,8 +379,6 @@ def main_backtest():
     time_diff = end_time - start_time
 
     total_profit = trade_log_df['profit'].sum()
-    initial_balance = 1000000  # Assuming this is set elsewhere in your code
-    btc_exchange_rate = 62991.00  # 1 BTC = 62,991.00 USD
 
     summary_data = [
         ["Total Profit", f"{Fore.GREEN}${total_profit:.2f}{Style.RESET_ALL}"],
@@ -336,7 +393,8 @@ def main_backtest():
     print(f"{Fore.MAGENTA}{'=' * 60}{Style.RESET_ALL}\n")
 
     print(
-        f"{Fore.YELLOW}Profit of ${total_profit:.2f} made in {time_diff}{Style.RESET_ALL}\n"
+        f"{Fore.YELLOW}Profit of ${total_profit:.2f} made in "
+        f"{time_diff}{Style.RESET_ALL}\n"
     )
 
     summary_data = [
@@ -344,8 +402,13 @@ def main_backtest():
         ["Number of Trades", len(trade_log_df)],
         ["Time Frame", f"{Fore.YELLOW}{time_diff}{Style.RESET_ALL}"],
     ]
-    print(tabulate(summary_data, headers=[
-          "Metric", "Value"], tablefmt="fancy_grid"))
+    print(
+        tabulate(
+            summary_data,
+            headers=["Metric", "Value"],
+            tablefmt="fancy_grid",
+        )
+    )
 
     advanced_metrics_table = [
         [
@@ -358,11 +421,17 @@ def main_backtest():
         ],
         [
             "Largest Single Profit",
-            f"{Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}",
+            (
+                f"{Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}"
+                f"{Style.RESET_ALL}"
+            ),
         ],
         [
             "Largest Single Loss",
-            f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}{Style.RESET_ALL}",
+            (
+                f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}"
+                f"{Style.RESET_ALL}"
+            ),
         ],
         [
             "Avg Trade Duration",
@@ -372,38 +441,67 @@ def main_backtest():
     ]
 
     print("\nAdvanced Metrics")
-    print(tabulate(advanced_metrics_table, headers=[f"{Fore.MAGENTA}Metric{Style.RESET_ALL}",
-                                                    f"{Fore.MAGENTA}Value{Style.RESET_ALL}"],
-                   tablefmt="fancy_grid"))
+    print(
+        tabulate(
+            advanced_metrics_table,
+            headers=[
+                f"{Fore.MAGENTA}Metric{Style.RESET_ALL}",
+                f"{Fore.MAGENTA}Value{Style.RESET_ALL}",
+            ],
+            tablefmt="fancy_grid",
+        )
+    )
 
     additional_data = [
         [
             "Profit Range",
-            f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}{Style.RESET_ALL} <-> {Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}{Style.RESET_ALL}",
+            (
+                f"{Fore.RED}${advanced_metrics['Largest Single Loss']:.2f}"
+                f"{Style.RESET_ALL} <-> "
+                f"{Fore.GREEN}${advanced_metrics['Largest Single Profit']:.2f}"
+                f"{Style.RESET_ALL}"
+            ),
         ],
         ["Most Common Pair", "Coinbase (Buy) -> Bitfinex (Sell)"]
     ]
 
     print("\nAdditional Statistics")
-    print(tabulate(additional_data, headers=[f"{Fore.MAGENTA}Metric{Style.RESET_ALL}",
-                                             f"{Fore.MAGENTA}Value{Style.RESET_ALL}"],
-                   tablefmt="fancy_grid"))
+    print(
+        tabulate(
+            additional_data,
+            headers=[
+                f"{Fore.MAGENTA}Metric{Style.RESET_ALL}",
+                f"{Fore.MAGENTA}Value{Style.RESET_ALL}",
+            ],
+            tablefmt="fancy_grid",
+        )
+    )
 
     print(f"\n{Fore.CYAN}Trade Log:{Style.RESET_ALL}")
 
     if not trade_log_df.empty:
         trade_log_df_display = trade_log_df.copy()
-        trade_log_df_display['timestamp'] = trade_log_df_display['timestamp'].dt.strftime(
-            '%Y-%m-%d %H:%M:%S')
-        trade_log_df_display['profit'] = trade_log_df_display['profit'].apply(
-            lambda x: color_profit(f"${x:.2f}"))
-        trade_log_df_display['buy_exchange'] = trade_log_df_display['buy_exchange'].apply(
-            lambda x: f"{Fore.YELLOW}{x}{Style.RESET_ALL}")
-        trade_log_df_display['sell_exchange'] = trade_log_df_display['sell_exchange'].apply(
-            lambda x: f"{Fore.YELLOW}{x}{Style.RESET_ALL}")
+        trade_log_df_display["timestamp"] = (
+            trade_log_df_display["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+        )
+        trade_log_df_display["profit"] = trade_log_df_display["profit"].apply(
+            lambda x: color_profit(f"${x:.2f}")
+        )
+        trade_log_df_display["buy_exchange"] = trade_log_df_display[
+            "buy_exchange"
+        ].apply(lambda x: f"{Fore.YELLOW}{x}{Style.RESET_ALL}")
+        trade_log_df_display["sell_exchange"] = trade_log_df_display[
+            "sell_exchange"
+        ].apply(lambda x: f"{Fore.YELLOW}{x}{Style.RESET_ALL}")
 
-        display_columns = ['timestamp', 'buy_exchange',
-                           'sell_exchange', 'buy_price', 'sell_price', 'profit']
+        display_columns = [
+            "timestamp",
+            "buy_exchange",
+            "sell_exchange",
+            "buy_price",
+            "sell_price",
+            "profit",
+        ]
 
         # Select 3 rows with different profits
         sample_rows = trade_log_df_display.drop_duplicates(
@@ -417,16 +515,31 @@ def main_backtest():
         sample_rows = sample_rows.sort_values('timestamp')
 
         print(
-            f"\n{Fore.CYAN}{Back.BLACK}{'SELECTED TRADES FROM LOG':^70}{Style.RESET_ALL}"
+            f"\n{Fore.CYAN}{Back.BLACK}"
+            f"{'SELECTED TRADES FROM LOG':^70}{Style.RESET_ALL}"
         )
-        print(tabulate(sample_rows[display_columns],
-                       headers=[f"{Fore.MAGENTA}{header}{Style.RESET_ALL}" for header in
-                                ['Timestamp', 'Buy Exchange', 'Sell Exchange', 'Buy Price', 'Sell Price', 'Profit']],
-                       tablefmt='fancy_grid',
-                       showindex=False))
+        print(
+            tabulate(
+                sample_rows[display_columns].values.tolist(),
+                headers=[
+                    f"{Fore.MAGENTA}{header}{Style.RESET_ALL}"
+                    for header in [
+                        "Timestamp",
+                        "Buy Exchange",
+                        "Sell Exchange",
+                        "Buy Price",
+                        "Sell Price",
+                        "Profit",
+                    ]
+                ],
+                tablefmt="fancy_grid",
+                showindex=False,
+            )
+        )
     else:
         print(
-            f"\n{Fore.RED}No trades were executed during the backtest.{Style.RESET_ALL}\n"
+            f"\n{Fore.RED}No trades were executed during the backtest."
+            f"{Style.RESET_ALL}\n"
         )
 
     # Add a bunch of space after the last table
