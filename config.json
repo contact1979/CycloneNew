@@ -14,8 +14,8 @@
       "api_key_env": "KRAKEN_API_KEY",
       "secret_key_env": "KRAKEN_SECRET_KEY",
       "fees": {
-        "taker": 0.0026,
-        "maker": 0.0016
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -23,8 +23,8 @@
       "api_key_env": "COINBASE_API_KEY",
       "secret_key_env": "COINBASE_SECRET_KEY",
       "fees": {
-        "taker": 0.005,
-        "maker": 0.005
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -32,7 +32,7 @@
       "api_key_env": "BITFINEX_API_KEY",
       "secret_key_env": "BITFINEX_SECRET_KEY",
       "fees": {
-        "taker": 0.002,
+        "taker": 0.001,
         "maker": 0.001
       }
     },
@@ -41,8 +41,8 @@
       "api_key_env": "HUOBI_API_KEY",
       "secret_key_env": "HUOBI_SECRET_KEY",
       "fees": {
-        "taker": 0.002,
-        "maker": 0.002
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -50,8 +50,8 @@
       "api_key_env": "BITTREX_API_KEY",
       "secret_key_env": "BITTREX_SECRET_KEY",
       "fees": {
-        "taker": 0.0025,
-        "maker": 0.0025
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -59,8 +59,8 @@
       "api_key_env": "POLONIEX_API_KEY",
       "secret_key_env": "POLONIEX_SECRET_KEY",
       "fees": {
-        "taker": 0.0015,
-        "maker": 0.0015
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -68,8 +68,8 @@
       "api_key_env": "BITSTAMP_API_KEY",
       "secret_key_env": "BITSTAMP_SECRET_KEY",
       "fees": {
-        "taker": 0.005,
-        "maker": 0.005
+        "taker": 0.001,
+        "maker": 0.001
       }
     },
     {
@@ -77,7 +77,7 @@
       "api_key_env": "GEMINI_API_KEY",
       "secret_key_env": "GEMINI_SECRET_KEY",
       "fees": {
-        "taker": 0.0035,
+        "taker": 0.001,
         "maker": 0.001
       }
     },
@@ -86,7 +86,7 @@
       "api_key_env": "OKX_API_KEY",
       "secret_key_env": "OKX_SECRET_KEY",
       "fees": {
-        "taker": 0.0015,
+        "taker": 0.001,
         "maker": 0.001
       }
     },
@@ -104,8 +104,8 @@
       "api_key_env": "FTX_API_KEY",
       "secret_key_env": "FTX_SECRET_KEY",
       "fees": {
-        "taker": 0.0007,
-        "maker": 0.0002
+        "taker": 0.001,
+        "maker": 0.001
       }
     }
   ],
