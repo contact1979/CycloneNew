@@ -163,10 +163,10 @@ class PositionManager:
                              log.warning(f"Redis key {key} has no value.")
                     except json.JSONDecodeError:
                         log.error(f"Failed to decode JSON for Redis key {key}.")
-                    except Exception as e:
-                        log.exception(f"Failed to load/parse position for key {key}: {e}")
+                    except Exception as e:                        log.exception(f"Failed to load/parse position for key {key}: {e}")
         except Exception as e:
-            log.exception(f"Error scanning/loading positions from Redis: {e}")        log.info(f"Finished loading from Redis. Loaded {loaded_count} positions.")
+            log.exception(f"Error scanning/loading positions from Redis: {e}")
+        log.info(f"Finished loading from Redis. Loaded {loaded_count} positions.")
         
     def update_position_on_fill(self, symbol: str, quantity: float, price: float, timestamp: float):
         """Updates the position for a symbol based on an executed trade (fill)."""

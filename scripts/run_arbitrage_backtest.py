@@ -50,11 +50,10 @@ class ArbitrageBacktester:
         self.max_trade_amount = self.config['max_trade_amount']
         self.min_profit_percent = self.config['min_profit_percent']
         self.slippage = self.config.get('slippage', 0.0005)  # Default 0.05%
-        
-        # Track balances and performance
+          # Track balances and performance
         self.balances = {}
         self.trade_log = []
-        self.position_manager = PositionManager()
+        # Don't initialize PositionManager as it requires config we don't have in backtest
         
         logger.info(f"ArbitrageBacktester initialized with symbol {self.symbol}")
         
