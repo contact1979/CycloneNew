@@ -42,7 +42,6 @@ def load_config() -> Dict[str, Any]:
             "min_profit_percent",
             "trade_amount",
             "max_trade_amount",
-            "trade_currency",
             "initial_balance",
         ]
         for key in required_keys:
@@ -62,8 +61,6 @@ symbol = config['symbol']
 min_profit_percent = config['min_profit_percent']
 trade_amount = config['trade_amount']
 max_trade_amount = config['max_trade_amount']
-trade_currency = config['trade_currency']
-initial_balance = config['initial_balance']
 
 # Map symbols per exchange (if needed)
 exchange_symbol_map = {
@@ -350,7 +347,7 @@ def main_backtest() -> None:
         return
 
     df_merged = synchronize_data(data)
-    initial_balance = config['initial_balance']
+    initial_balance = config["initial_balance"]
 
     # Run backtest
     balances, trade_log = backtest(
@@ -369,7 +366,6 @@ def main_backtest() -> None:
     time_diff = end_time - start_time
 
     total_profit = trade_log_df['profit'].sum()
-    initial_balance = 1000000  # Assuming this is set elsewhere in your code
 
     summary_data = [
         ["Total Profit", f"{Fore.GREEN}${total_profit:.2f}{Style.RESET_ALL}"],
