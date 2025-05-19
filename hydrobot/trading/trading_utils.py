@@ -1,4 +1,4 @@
-# hydrobot/trading/trading_utils.py
+"""Utility helpers for order formatting and validation."""
 
 import math
 from decimal import Decimal, ROUND_DOWN, ROUND_UP # Use Decimal for precision

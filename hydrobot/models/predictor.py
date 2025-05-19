@@ -1,4 +1,4 @@
-# /modeling/predictor.py
+"""Core ML prediction utilities."""
 
 import logging
 import pandas as pd

@@ -1,4 +1,3 @@
-# hydrobot/strategies/impl_vwap.py
 """VWAP based trading strategy."""
 
 from collections import deque

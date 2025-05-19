@@ -1,4 +1,4 @@
-# /data_collection/reddit_client.py -> hydrobot/data/client_reddit.py
+"""Reddit client wrapper for subreddit news ingestion."""
 
 import praw
 import datetime

@@ -1,4 +1,4 @@
-# /hydrobot/data/client_twitter.py
+"""Twitter client wrapper for tweet ingestion."""
 
 import tweepy
 import datetime

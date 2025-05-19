@@ -1,6 +1,6 @@
-# /data_collection/binance_client.py -> hydrobot/data/client_binance.py
+"""Binance client wrapper for fetching market data."""
 
-import logging # Keep standard logging import for now, get_logger will wrap it
+import logging  # Keep standard logging import for now, get_logger will wrap it
 import pandas as pd
 from binance.client import Client
 from binance.exceptions import BinanceAPIException, BinanceRequestException

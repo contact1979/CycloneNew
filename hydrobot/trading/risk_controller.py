@@ -1,4 +1,4 @@
-# hydrobot/trading/risk_controller.py
+"""Risk management helpers for validating trade signals."""
 
 from typing import Optional, Dict, Tuple
 import math # For isnan/isinf

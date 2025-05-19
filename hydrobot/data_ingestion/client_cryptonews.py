@@ -1,6 +1,6 @@
-# /data_collection/cryptonews_client.py -> hydrobot/data/client_cryptonews.py
+"""CryptoNews API client wrapper for news retrieval."""
 
-import logging # Keep standard logging import
+import logging  # Keep standard logging import
 import requests
 import datetime
 import pytz # For timezone handling

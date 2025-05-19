@@ -37,6 +37,7 @@ pytest-cov = "^4.1"
 black = "^24.1"
 mypy = "^1.8"
 flake8 = "^6.1"
+isort = "^5.13"
 
 [[tool.poetry.source]]
 name = "pypi"
@@ -51,6 +52,10 @@ build-backend = "poetry.core.masonry.api"
 line-length = 88
 target-version = ['py39']
 include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
 
 [tool.mypy]
 python_version = "3.9"

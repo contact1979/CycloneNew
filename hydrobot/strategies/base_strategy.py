@@ -1,4 +1,4 @@
-# hydrobot/strategies/base_strategy.py
+"""Abstract base classes for trading strategies."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

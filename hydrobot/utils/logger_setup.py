@@ -1,4 +1,4 @@
-# hydrobot/utils/logger_setup.py
+"""Application-wide logging configuration utilities."""
 
 import logging
 import logging.handlers

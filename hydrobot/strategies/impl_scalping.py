@@ -1,4 +1,4 @@
-# hydrobot/strategies/impl_scalping.py
+"""Simple scalping strategy implementation."""
 
 from typing import Dict, Any, Optional, List, Tuple
 import time

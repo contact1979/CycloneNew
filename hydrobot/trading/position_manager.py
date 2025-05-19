@@ -1,4 +1,4 @@
-# hydrobot/trading/position_manager.py
+"""Tracks open positions and portfolio state."""
 
 import json
 import time

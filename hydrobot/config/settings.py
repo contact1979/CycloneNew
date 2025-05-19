@@ -1,6 +1,4 @@
-# hydrobot/config/settings.py
-# (Keep all the Pydantic models defined above as they were)
-# ... (PathSettings, ExchangeAPISettings, etc. - NO CHANGES HERE) ...
+"""Pydantic settings and configuration loading utilities."""
 
 import os
 from pydantic import BaseModel, Field, SecretStr, validator
