@@ -111,9 +111,13 @@ def synchronize_data(data):
     return df_merged
 
 
-def calculate_profit(buy_price, sell_price, buy_fee, sell_fee, amount):
-    buy_cost = buy_price * amount * (1 + buy_fee)
-    sell_revenue = sell_price * amount * (1 - sell_fee)
+def calculate_profit(buy_price, sell_price, buy_fee, sell_fee, amount, slippage=0.0005):
+    # Apply slippage: buy prices get worse (higher), sell prices get worse (lower)
+    buy_price_with_slip = buy_price * (1 + slippage)
+    sell_price_with_slip = sell_price * (1 - slippage)
+    
+    buy_cost = buy_price_with_slip * amount * (1 + buy_fee)
+    sell_revenue = sell_price_with_slip * amount * (1 - sell_fee)
     profit = sell_revenue - buy_cost
     profit_percent = (profit / buy_cost) * 100
     return profit_percent, profit

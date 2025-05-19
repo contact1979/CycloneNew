@@ -163,3 +163,22 @@
 2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:100] - Initialized strategy: VWAPStrategy
 2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:106] - Strategy 'VWAPStrategy' assigned to symbol: BTC/USDT
 2025-05-18 14:11:56 - hydrobot.trading.portfolio - WARNING - [portfolio.py:168] - [BTC/USDT] Calculated trade quantity 0.0 does not meet min size requirements
+2025-05-18 19:26:08 - hydrobot - INFO - [logger_setup.py:52] - File logging configured to: logs\hydrobot.log
+2025-05-18 19:26:08 - hydrobot - INFO - [logger_setup.py:55] - Logger 'hydrobot' initialized with level INFO.
+2025-05-18 19:26:08 - hydrobot - INFO - [logger_setup.py:56] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 19:26:09 - hydrobot.config.settings - INFO - [settings.py:131] - Loading configuration from: config.yaml
+2025-05-18 19:26:09 - hydrobot.config.settings - INFO - [settings.py:146] - Loading secrets from: secrets.yaml
+2025-05-18 19:26:09 - hydrobot.config.settings - WARNING - [settings.py:161] - Skipping merge for 'redis' secrets: Expected a dictionary, found <class 'NoneType'>.
+2025-05-18 19:26:25 - hydrobot - INFO - [logger_setup.py:52] - File logging configured to: logs\hydrobot.log
+2025-05-18 19:26:25 - hydrobot - INFO - [logger_setup.py:55] - Logger 'hydrobot' initialized with level INFO.
+2025-05-18 19:26:25 - hydrobot - INFO - [logger_setup.py:56] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 19:26:25 - hydrobot.config.settings - INFO - [settings.py:131] - Loading configuration from: config.yaml
+2025-05-18 19:26:25 - hydrobot.config.settings - INFO - [settings.py:146] - Loading secrets from: secrets.yaml
+2025-05-18 19:26:25 - hydrobot.config.settings - WARNING - [settings.py:161] - Skipping merge for 'redis' secrets: Expected a dictionary, found <class 'NoneType'>.
+2025-05-18 19:26:25 - hydrobot.trading.portfolio - WARNING - [portfolio.py:168] - [BTC/USDT] Calculated trade quantity 0.0 does not meet min size requirements
+2025-05-18 20:47:45 - hydrobot - INFO - [logger_setup.py:52] - File logging configured to: logs\hydrobot.log
+2025-05-18 20:47:45 - hydrobot - INFO - [logger_setup.py:55] - Logger 'hydrobot' initialized with level INFO.
+2025-05-18 20:47:45 - hydrobot - INFO - [logger_setup.py:56] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 20:47:45 - hydrobot.config.settings - INFO - [settings.py:131] - Loading configuration from: config.yaml
+2025-05-18 20:47:45 - hydrobot.config.settings - INFO - [settings.py:146] - Loading secrets from: secrets.yaml
+2025-05-18 20:47:45 - hydrobot.config.settings - WARNING - [settings.py:161] - Skipping merge for 'redis' secrets: Expected a dictionary, found <class 'NoneType'>.

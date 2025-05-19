@@ -17,14 +17,13 @@
         "taker": 0.0026,
         "maker": 0.0016
       }
-    },
-    {
+    },    {
       "name": "coinbase",
       "api_key_env": "COINBASE_API_KEY",
       "secret_key_env": "COINBASE_SECRET_KEY",
       "fees": {
-        "taker": 0.005,
-        "maker": 0.005
+        "taker": 0.0035,
+        "maker": 0.0025
       }
     },
     {
