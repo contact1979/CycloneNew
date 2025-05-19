@@ -124,9 +124,13 @@ def calculate_profit(
     buy_fee: float,
     sell_fee: float,
     amount: float,
+    slippage: float = 0.0,
 ) -> Tuple[float, float]:
-    buy_cost = buy_price * amount * (1 + buy_fee)
-    sell_revenue = sell_price * amount * (1 - sell_fee)
+    """Calculate profit with fees and optional slippage."""
+    buy_price_adj = buy_price * (1 + slippage)
+    sell_price_adj = sell_price * (1 - slippage)
+    buy_cost = buy_price_adj * amount * (1 + buy_fee)
+    sell_revenue = sell_price_adj * amount * (1 - sell_fee)
     profit = sell_revenue - buy_cost
     profit_percent = (profit / buy_cost) * 100
     return profit_percent, profit
@@ -157,7 +161,12 @@ def check_arbitrage_opportunities(
 
                 if max_amount > 0:
                     profit_percent, profit = calculate_profit(
-                        buy_price, sell_price, buy_fee, sell_fee, max_amount
+                        buy_price,
+                        sell_price,
+                        buy_fee,
+                        sell_fee,
+                        max_amount,
+                        slippage=0.0005,
                     )
                     logging.debug(
                         "Evaluated opportunity: Buy on %s at %s, "

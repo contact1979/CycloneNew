@@ -63,6 +63,7 @@ The project's architecture draws inspiration from:
 
 ## License Compliance
 
-All code adaptations and usage comply with the original licenses. This project itself is released under the MIT License.
+All code adaptations and usage comply with the original licenses.
+This project itself is released under the MIT License.
 
 See the [LICENSE](LICENSE) file for the complete license text.
