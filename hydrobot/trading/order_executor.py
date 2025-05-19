@@ -1,6 +1,6 @@
-# hydrobot/trading/order_executor.py
+"""Abstraction for placing and managing orders on an exchange."""
 
-import ccxt.async_support as ccxt # Use the async version of ccxt
+import ccxt.async_support as ccxt  # Use the async version of ccxt
 import asyncio
 import time
 import math

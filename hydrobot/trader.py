@@ -1,4 +1,4 @@
-# hydrobot/trader.py
+"""Main trading loop orchestration logic."""
 
 import asyncio
 import time

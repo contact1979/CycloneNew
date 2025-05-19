@@ -1,0 +1,21 @@
+app_name: "HydroBot"
+environment: "development"
+log_level: "INFO"
+
+exchange:
+  name: "binanceus"
+  is_sandbox: true
+
+trading:
+  symbols: ["BTC/USDT"]
+  default_order_type: "limit"
+  default_trade_amount_usd: 15.0
+
+risk:
+  max_drawdown_pct: 0.1
+  max_risk_per_trade_pct: 0.01
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0

@@ -1,4 +1,4 @@
-# hydrobot/strategies/strategy_manager.py
+"""Strategy discovery and lifecycle management."""
 
 import importlib
 import pkgutil

@@ -1,4 +1,4 @@
-# /feature_engineering/feature_generator.py
+"""Feature engineering utilities for model training."""
 
 import logging
 import pandas as pd
