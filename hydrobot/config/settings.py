@@ -123,19 +123,16 @@ def load_config(config_file: str = "config/config.yaml", secrets_file: Optional[
         An AppSettings object populated with configuration values.
     """
     config_data = {}
-    if os.path.exists(config_file) and yaml is not None:
+    if os.path.exists(config_file):
+        if yaml is None:
+            raise RuntimeError(
+                "PyYAML is required to load configuration files. Please install it."
+            )
         log.info(f"Loading configuration from: {config_file}")
         with open(config_file, 'r') as f:
             config_data = yaml.safe_load(f) or {}
     else:
-        if os.path.exists(config_file) and yaml is None:
-            log.error(
-                "PyYAML not installed. Skipping configuration file load and using defaults."
-            )
-        else:
-            log.warning(
-                f"Configuration file not found: {config_file}. Using defaults."
-            )
+        log.warning(f"Configuration file not found: {config_file}. Using defaults.")
 
     # Ensure base structure exists before trying to merge secrets
     if 'exchange' not in config_data: config_data['exchange'] = {}
@@ -143,14 +140,12 @@ def load_config(config_file: str = "config/config.yaml", secrets_file: Optional[
 
     if secrets_file and os.path.exists(secrets_file):
         if yaml is None:
-            log.error(
-                "PyYAML not installed. Skipping secrets file load and using defaults."
+            raise RuntimeError(
+                "PyYAML is required to load configuration files. Please install it."
             )
-            secrets_data = {}
-        else:
-            log.info(f"Loading secrets from: {secrets_file}")
-            with open(secrets_file, 'r') as f:
-                secrets_data = yaml.safe_load(f) or {}
+        log.info(f"Loading secrets from: {secrets_file}")
+        with open(secrets_file, 'r') as f:
+            secrets_data = yaml.safe_load(f) or {}
             # --- Start FIX ---
             # Safely merge secrets only if the section exists in secrets_data
             if 'exchange' in secrets_data and isinstance(secrets_data['exchange'], dict):
@@ -198,28 +193,22 @@ def load_config(config_file: str = "config/config.yaml", secrets_file: Optional[
 # ... (Keep the logic below load_config as it was) ...
 # Load config when the module is imported...
 try:
-    _default_config_path = "config.yaml"  # Look in CWD (project root) first
-    _default_secrets_path = "secrets.yaml"  # Look in CWD (project root) first
+    _default_config_path = "config.yaml" # Look in CWD (project root) first
+    _default_secrets_path = "secrets.yaml" # Look in CWD (project root) first
 
-    if os.path.exists(_default_config_path) and yaml is not None:
-        CONFIG = load_config(
-            config_file=_default_config_path, secrets_file=_default_secrets_path
-        )
+    if os.path.exists(_default_config_path):
+         CONFIG = load_config(config_file=_default_config_path, secrets_file=_default_secrets_path)
     else:
-        if not os.path.exists(_default_config_path):
-            log.warning(
-                f"Could not find configuration file at '{_default_config_path}'. Using default settings."
-            )
-        elif yaml is None:
-            log.warning(
-                "PyYAML not installed. Using default settings without loading configuration file."
-            )
+        # Fallback if config not in CWD - maybe hydrobot is the CWD? Unlikely.
+        # Let's assume config.yaml MUST be in the root where main.py is run.
+        log.error(f"Could not find configuration file at '{_default_config_path}'. Please ensure config.yaml is in the project root directory.")
+        CONFIG = None # Indicate failure to load
+        raise FileNotFoundError(f"Configuration file '{_default_config_path}' not found.")
 
-        CONFIG = AppSettings(exchange=ExchangeAPISettings(name="binanceus"))
 
-except Exception:
+except Exception as e:
     log.exception("Failed to initialize configuration during module import.")
-    CONFIG = AppSettings(exchange=ExchangeAPISettings(name="binanceus"))
+    CONFIG = None
 
 # --- Helper function to get config ---
 def get_config() -> AppSettings:

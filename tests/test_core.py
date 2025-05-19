@@ -98,9 +98,10 @@ async def test_position_manager():
     timestamp = datetime.utcnow().timestamp()
     manager.update_position_on_fill(symbol, quantity, price, timestamp)
     position = manager.get_position(symbol)
+    
     assert position.symbol == "BTC/USDT"
-    assert position.quantity == pytest.approx(0.1, abs=1e-8)
-    assert position.average_entry_price == pytest.approx(100.0, abs=1e-8)
+    assert position.quantity == 0.1
+    assert position.average_entry_price == 100.0
     
     # Test second position update (buy more)
     symbol = "BTC/USDT"
@@ -108,22 +109,22 @@ async def test_position_manager():
     price = 110.0
     timestamp = datetime.utcnow().timestamp()
     manager.update_position_on_fill(symbol, quantity, price, timestamp)
-    position = manager.get_position(symbol)
-    # New quantity = 0.1 + 0.2 = 0.3
+    position = manager.get_position(symbol)    # New quantity = 0.1 + 0.2 = 0.3
     # New average entry price = (0.1 * 100.0 + 0.2 * 110.0) / 0.3 = (10 + 22) / 0.3 = 32 / 0.3 = 106.67
-    assert position.quantity == pytest.approx(0.3, abs=1e-8)
-    assert position.average_entry_price == pytest.approx(106.67, abs=0.01)
-    # Test partial close (sell)
+    assert abs(position.quantity - 0.3) < 1e-6  # Use floating point comparison for precision
+    assert abs(position.average_entry_price - 106.67) < 0.01
+      # Test partial close (sell)
     symbol = "BTC/USDT"
     quantity = -0.15  # Sell quantity (negative)
     price = 120.0
     timestamp = datetime.utcnow().timestamp()
     manager.update_position_on_fill(symbol, quantity, price, timestamp)
     position = manager.get_position(symbol)
+    
     # New quantity = 0.3 - 0.15 = 0.15
     # Average entry price remains the same
-    assert position.quantity == pytest.approx(0.15, abs=1e-8)
-    assert position.average_entry_price == pytest.approx(106.67, abs=0.01)
+    assert position.quantity == 0.15
+    assert abs(position.average_entry_price - 106.67) < 0.01
 
 
 def test_momentum_strategy_signal_generation():

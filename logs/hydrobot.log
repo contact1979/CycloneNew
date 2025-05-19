@@ -144,3 +144,22 @@
 2025-05-18 13:52:22 - hydrobot - INFO - [base_strategy.py:100] - Initialized strategy: VWAPStrategy
 2025-05-18 13:52:22 - hydrobot - INFO - [base_strategy.py:106] - Strategy 'VWAPStrategy' assigned to symbol: BTC/USDT
 2025-05-18 13:52:22 - hydrobot.trading.portfolio - WARNING - [portfolio.py:168] - [BTC/USDT] Calculated trade quantity 0.0 does not meet min size requirements
+2025-05-18 14:03:07 - hydrobot - INFO - [logger_setup.py:52] - File logging configured to: logs\hydrobot.log
+2025-05-18 14:03:07 - hydrobot - INFO - [logger_setup.py:55] - Logger 'hydrobot' initialized with level INFO.
+2025-05-18 14:03:07 - hydrobot - INFO - [logger_setup.py:56] - Log directory: c:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 14:03:08 - hydrobot.config.settings - INFO - [settings.py:153] - Loading configuration from: config.yaml
+2025-05-18 14:03:08 - hydrobot.config.settings - INFO - [settings.py:177] - Loading secrets from: secrets.yaml
+2025-05-18 14:03:08 - hydrobot.config.settings - WARNING - [settings.py:192] - Skipping merge for 'redis' secrets: Expected a dictionary, found <class 'NoneType'>.
+2025-05-18 14:11:51 - hydrobot - INFO - [logger_setup.py:52] - File logging configured to: logs\hydrobot.log
+2025-05-18 14:11:51 - hydrobot - INFO - [logger_setup.py:55] - Logger 'hydrobot' initialized with level INFO.
+2025-05-18 14:11:51 - hydrobot - INFO - [logger_setup.py:56] - Log directory: C:\Users\tytan\DEV\CycloneNew\logs
+2025-05-18 14:11:51 - hydrobot.config.settings - INFO - [settings.py:153] - Loading configuration from: config.yaml
+2025-05-18 14:11:51 - hydrobot.config.settings - INFO - [settings.py:177] - Loading secrets from: secrets.yaml
+2025-05-18 14:11:51 - hydrobot.config.settings - WARNING - [settings.py:192] - Skipping merge for 'redis' secrets: Expected a dictionary, found <class 'NoneType'>.
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:100] - Initialized strategy: MomentumStrategy
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:106] - Strategy 'MomentumStrategy' assigned to symbol: BTC/USDT
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:100] - Initialized strategy: MeanReversionStrategy
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:106] - Strategy 'MeanReversionStrategy' assigned to symbol: BTC/USDT
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:100] - Initialized strategy: VWAPStrategy
+2025-05-18 14:11:56 - hydrobot - INFO - [base_strategy.py:106] - Strategy 'VWAPStrategy' assigned to symbol: BTC/USDT
+2025-05-18 14:11:56 - hydrobot.trading.portfolio - WARNING - [portfolio.py:168] - [BTC/USDT] Calculated trade quantity 0.0 does not meet min size requirements
