@@ -33,7 +33,7 @@ maximum account drawdown percentage. Position sizing is capped by the
 
 ### Local Run
 ```bash
-pip install -r requirements.txt
+./setup.sh
 python main.py
 ```
 
