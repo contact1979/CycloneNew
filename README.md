@@ -82,6 +82,16 @@ Use the provided PowerShell script to create a virtual environment and install p
 ./setup.ps1
 ```
 
+### Code Formatting
+Run the helper script to format and lint the codebase:
+
+```bash
+./format_code.py
+```
+
+`black` and `flake8` must be installed. They are listed in
+`dev-requirements.txt`.
+
 ## Directory Structure
 ```
 hydrobot/       # core package
