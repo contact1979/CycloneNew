@@ -1,0 +1,6 @@
+# This enables pre-commit.ci to auto-fix and commit lint/format issues on PRs.
+# See https://pre-commit.ci/
+ci:
+  autofix_commit: true
+  autofix_prs: true
+  over-write-author: true

@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *' # Nightly at 3am UTC
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - run: pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: pip install black flake8 isort pytest mypy bandit
+      - name: Lint (black)
+        run: black --check .
+      - name: Lint (isort)
+        run: isort --check-only .
+      - name: Lint (flake8)
+        run: flake8 .
+      - name: Type check (mypy)
+        run: mypy .
+      - name: Security scan (bandit)
+        run: bandit -r . --skip B101
+      - name: Tests
+        run: pytest --cov=hydrobot --cov-report=term-missing
+      - name: pip check
+        run: pip check
+  dependabot-auto-merge:
+    needs: build
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
