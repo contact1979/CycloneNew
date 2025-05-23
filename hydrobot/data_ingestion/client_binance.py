@@ -1,13 +1,8 @@
 """Binance client wrapper for fetching market data."""
 
-<<<<<<< HEAD
-import logging  # Keep standard logging import for now, get_logger will wrap it
-=======
 import datetime
 import logging  # Keep standard logging import for now, get_logger will wrap it
-import time
 
->>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
 import pandas as pd
 import pytz  # For timezone handling
 from binance.client import Client
@@ -308,10 +303,14 @@ if __name__ == "__main__":
         # 2. Get Target Symbols (Optional Test, uses settings)
         print("\nFetching symbols...")
         target_syms = get_target_symbols(
-            quote_asset="USDT"
-        )  # Uses threshold from settings        if target_syms:
+            quote_asset="USDT",
+        )  # Uses threshold from settings
+        if target_syms:
             print(
-                "Found {} target symbols. Example: {}".format(len(target_syms), target_syms[:10])
+                "Found {} target symbols. Example: {}".format(
+                    len(target_syms),
+                    target_syms[:10],
+                )
             )
         else:
             print("Could not fetch target symbols.")

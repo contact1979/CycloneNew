@@ -28,36 +28,36 @@ _model_metadata = None
 
 
 def load_model_and_metadata() -> Optional[Tuple[Any, Dict]]:
-    """
-    Loads the saved machine learning model and its metadata.
-    Uses a singleton pattern to load only once.
+    """Load the saved model and its metadata if not already loaded."""
 
-    Returns:
-        Optional[Tuple[Any, Dict]]: The loaded model object and its metadata dictionary,
-                                     or None if loading fails.
-    """
     global _loaded_model, _model_metadata
     if _loaded_model is None:
         model_path = os.path.join(MODEL_DIR, MODEL_FILENAME)
-        metadata_path = os.path.join(MODEL_DIR, MODEL_METADATA_FILENAME)        if not os.path.exists(model_path) or not os.path.exists(metadata_path):
+        metadata_path = os.path.join(MODEL_DIR, MODEL_METADATA_FILENAME)
+
+        if not os.path.exists(model_path) or not os.path.exists(metadata_path):
             log.error(
-                f"Model file '{model_path}' or metadata file '{metadata_path}' not found. Cannot load model."
+                "Model file '%s' or metadata file '%s' not found. Cannot load model.",
+                model_path,
+                metadata_path,
             )
             return None
 
-        try:            log.info("Loading model from: {}".format(model_path))
+        try:
+            log.info("Loading model from: %s", model_path)
             _loaded_model = joblib.load(model_path)
             log.info("Model loaded successfully.")
 
-            log.info("Loading metadata from: {}".format(metadata_path))
+            log.info("Loading metadata from: %s", metadata_path)
             with open(metadata_path, "r") as f:
                 _model_metadata = json.load(f)
             log.info(
-                "Metadata loaded successfully. Model trained on {} features.".format(len(_model_metadata.get('feature_names', [])))
+                "Metadata loaded successfully. Model trained on %s features.",
+                len(_model_metadata.get("feature_names", [])),
             )
 
         except Exception as e:
-            log.error(f"Error loading model or metadata: {e}", exc_info=True)
+            log.error("Error loading model or metadata: %s", e, exc_info=True)
             _loaded_model = None
             _model_metadata = None
 
