@@ -10,9 +10,6 @@ python -m pip install --upgrade pip wheel
 if [[ -f requirements.txt ]]; then
   pip install -r requirements.txt
 fi
-if [[ -f dev-requirements.txt ]]; then
-  pip install -r dev-requirements.txt
-fi
 
 # Install required dev tools for linting and testing
 pip install --upgrade flake8 pylint pytest black

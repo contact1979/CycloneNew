@@ -98,8 +98,7 @@ Run the helper script to format and lint the codebase:
 ./format_code.py
 ```
 
-`black` and `flake8` must be installed. They are listed in
-`dev-requirements.txt`.
+`black` and `flake8` are included in the unified `requirements.txt` file.
 
 ## Directory Structure
 

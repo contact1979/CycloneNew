@@ -3,7 +3,7 @@
 Welcome! This guide explains how to develop, test, and contribute to CycloneNew.
 
 ## Setup
-- Ensure Python 3.8+ is installed.
+- Ensure Python 3.11+ is installed.
 - Create and activate a virtual environment:
   ```
   python3 -m venv .venv
@@ -12,7 +12,6 @@ Welcome! This guide explains how to develop, test, and contribute to CycloneNew.
 - Install dependencies:
   ```
   pip install -r requirements.txt
-  pip install -r dev-requirements.txt
   ```
 
 ## Development Workflow
