@@ -1,10 +1,5 @@
 """CryptoNews API client wrapper for news retrieval."""
 
-<<<<<<< HEAD
-import logging  # Keep standard logging import
-import requests
-=======
->>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
 import datetime
 import json  # Import json for serialization if needed
 import logging  # Keep standard logging import

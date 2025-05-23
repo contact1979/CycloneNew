@@ -79,15 +79,20 @@ class TradingManager:
                 and isinstance(last_trade, (int, float))
                 and not math.isnan(last_trade)
                 and last_trade > 0
-            ):                self.latest_prices[symbol] = last_trade
+            ):
+                self.latest_prices[symbol] = last_trade
                 log.debug(
-                    "[{}] Updated latest price (last trade): {:.4f}".format(symbol, last_trade)
+                    "[%s] Updated latest price (last trade): %.4f",
+                    symbol,
+                    last_trade,
                 )
-            # else: Keep old price or mark as stale?        # Trigger Trading Logic if not already running for this symbol
+            # else: Keep old price or mark as stale?
+
+        # Trigger Trading Logic if not already running for this symbol
         if symbol not in self._tasks or self._tasks[symbol].done():
             # Pass a copy of data to avoid race conditions if data is mutated later
             # Convert external market_data to a copy to avoid data race issues
-            data_copy = data.copy() if 'data' in locals() else {}
+            data_copy = data.copy() if "data" in locals() else {}
             self._tasks[symbol] = asyncio.create_task(
                 self._run_trade_cycle(symbol, data_copy)
             )

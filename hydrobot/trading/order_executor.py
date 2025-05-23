@@ -1,9 +1,5 @@
 """Abstraction for placing and managing orders on an exchange."""
 
-<<<<<<< HEAD
-import ccxt.async_support as ccxt  # Use the async version of ccxt
-=======
->>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
 import asyncio
 import math
 import time
@@ -13,7 +9,7 @@ from typing import Any, Dict, Optional, Tuple
 import ccxt.async_support as ccxt  # Use the async version of ccxt
 
 # --- FIX: Use relative imports ---
-from ..config.settings import AppSettings, get_config
+from ..config.settings import AppSettings
 from ..strategies.base_strategy import OrderType, Signal
 from ..utils.logger_setup import get_logger
 from .position_manager import PositionManager  # To notify about fills

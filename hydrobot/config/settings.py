@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 """Pydantic settings and configuration loading utilities."""
 
-=======
-# hydrobot/config/settings.py
->>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
 import os
 from typing import Dict, List, Optional
 
@@ -231,7 +227,8 @@ def load_config(
                 secrets_data["exchange"], dict
             ):
                 config_data["exchange"].update(secrets_data["exchange"])
-                log.debug("Merged 'exchange' secrets.")            elif "exchange" in secrets_data:
+                log.debug("Merged 'exchange' secrets.")
+            elif "exchange" in secrets_data:
                 log.warning(
                     "Skipping merge for 'exchange' secrets: "
                     f"Expected a dictionary, found {type(secrets_data['exchange'])}."
@@ -281,14 +278,15 @@ def load_config(
 try:
     _default_config_path = "config.yaml"  # Look in CWD (project root) first
     _default_secrets_path = "secrets.yaml"  # Look in CWD (project root) first
-    
+
     if os.path.exists(_default_config_path):
         CONFIG = load_config(
             config_file=_default_config_path, secrets_file=_default_secrets_path
         )
     else:
         # Fallback if config not in CWD - maybe hydrobot is the CWD? Unlikely.
-        # Let's assume config.yaml MUST be in the root where main.py is run.        log.error(
+        # Let's assume config.yaml MUST be in the root where main.py is run.
+        log.error(
             f"Could not find configuration file at '{_default_config_path}'. "
             "Please ensure config.yaml is in the project root directory."
         )
