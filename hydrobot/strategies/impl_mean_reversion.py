@@ -1,10 +1,10 @@
 """Simple mean reversion strategy using rolling mean and standard deviation."""
 
 from collections import deque
-from typing import Deque, Dict, Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Deque, Dict, Optional
 
-from .base_strategy import Strategy, Signal
 from ..utils.logger_setup import get_logger
+from .base_strategy import Signal, Strategy
 from .strategy_settings import MeanReversionStrategySettings
 
 if TYPE_CHECKING:
@@ -16,7 +16,11 @@ log = get_logger()
 class MeanReversionStrategy(Strategy):
     """Mean reversion strategy based on z-score of recent prices."""
 
-    def __init__(self, strategy_config: MeanReversionStrategySettings, global_config: 'AppSettings'):
+    def __init__(
+        self,
+        strategy_config: MeanReversionStrategySettings,
+        global_config: "AppSettings",
+    ):
         super().__init__(strategy_config, global_config)
         self.window_size = int(strategy_config.get("window_size", 20))
         self.std_dev_threshold = float(strategy_config.get("std_dev_threshold", 1.5))
@@ -36,7 +40,7 @@ class MeanReversionStrategy(Strategy):
             return None
         mean = sum(self.prices) / len(self.prices)
         variance = sum((p - mean) ** 2 for p in self.prices) / len(self.prices)
-        std = variance ** 0.5
+        std = variance**0.5
         return mean, std
 
     def generate_signal(
@@ -59,9 +63,13 @@ class MeanReversionStrategy(Strategy):
         if price > upper:
             signal.action = "SELL"
             signal.price = market_data.get("bids", [[price]])[0][0]
-            signal.quantity = self.global_config.trading.default_trade_amount_usd / signal.price
+            signal.quantity = (
+                self.global_config.trading.default_trade_amount_usd / signal.price
+            )
         elif price < lower:
             signal.action = "BUY"
             signal.price = market_data.get("asks", [[price]])[0][0]
-            signal.quantity = self.global_config.trading.default_trade_amount_usd / signal.price
+            signal.quantity = (
+                self.global_config.trading.default_trade_amount_usd / signal.price
+            )
         return signal

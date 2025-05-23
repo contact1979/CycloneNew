@@ -8,12 +8,14 @@ import hydrobot.trading.trading_utils as utils
 def setup_module():
     # Inject minimal market data into cache
     utils._market_cache.clear()
-    utils._market_cache.update({
-        "BTC/USDT": {
-            "precision": {"amount": 4, "price": 2},
-            "limits": {"amount": {"min": 0.001}, "cost": {"min": 10}}
+    utils._market_cache.update(
+        {
+            "BTC/USDT": {
+                "precision": {"amount": 4, "price": 2},
+                "limits": {"amount": {"min": 0.001}, "cost": {"min": 10}},
+            }
         }
-    })
+    )
 
 
 def test_format_quantity_precision():

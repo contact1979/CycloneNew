@@ -1,21 +1,16 @@
-<<<<<<< HEAD
-"""Pydantic settings and configuration loading utilities."""
-
-=======
 # hydrobot/config/settings.py
->>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
+# (Keep all the Pydantic models defined above as they were)
+# ... (PathSettings, ExchangeAPISettings, etc. - NO CHANGES HERE) ...   
 import os
-from typing import Dict, List, Optional
-
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, SecretStr, validator
-
 from ..strategies.strategy_settings import (
     MeanReversionStrategySettings,
     MomentumStrategySettings,
     ScalpingStrategySettings,
+    StrategySettings,
     VWAPStrategySettings,
 )
-
 try:
     import yaml
 except ImportError:  # pragma: no cover - optional dependency
@@ -26,27 +21,23 @@ import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-
 # --- Environment and Paths ---
 class PathSettings(BaseModel):
     """Defines paths used by the application."""
-
     log_dir: str = Field("logs", description="Directory to store log files.")
     data_dir: str = Field(
         "data", description="Directory for storing data files (CSV, etc.)."
     )
     model_dir: str = Field(
-        "models/saved", description="Directory to save trained models."
+        "models/saved", description="Directory to save trained models." 
     )
     config_dir: str = Field(
         "config", description="Directory where configuration files are stored."
     )
 
-
 # --- Exchange API Configuration ---
 class ExchangeAPISettings(BaseModel):
     """Configuration for connecting to a single exchange."""
-
     name: str = Field(
         ..., description="Name of the exchange (e.g., 'binanceus', 'coinbase')."
     )
@@ -62,16 +53,14 @@ class ExchangeAPISettings(BaseModel):
     )
     # Add other exchange-specific parameters if needed, e.g., rate limits
 
-
 # --- Trading Parameters ---
 class TradingSettings(BaseModel):
     """General trading parameters."""
-
     symbols: List[str] = Field(
         ..., description="List of trading symbols (e.g., ['BTC/USD', 'ETH/USD'])."
     )
     default_order_type: str = Field(
-        "limit", description="Default order type ('limit', 'market')."
+        "limit", description="Default order type ('limit', 'market')."  
     )
     default_trade_amount_usd: float = Field(
         10.0, description="Default amount in USD for trades."
@@ -80,14 +69,12 @@ class TradingSettings(BaseModel):
         3, description="Maximum number of concurrent open positions."
     )
     slippage_tolerance: float = Field(
-        0.001, description="Allowed slippage percentage (0.1%)."
+        0.001, description="Allowed slippage percentage (0.1%)."        
     )  # Example
-
 
 # --- Risk Management Settings ---
 class RiskSettings(BaseModel):
     """Risk management parameters."""
-
     max_drawdown_pct: float = Field(
         0.1, description="Maximum allowed portfolio drawdown percentage (10%)."
     )
@@ -101,11 +88,9 @@ class RiskSettings(BaseModel):
         0.04, description="Default take profit percentage (4%). Set to None to disable."
     )
 
-
 # --- Strategy Manager Settings ---
 class StrategyManagerSettings(BaseModel):
     """Settings for how strategies are selected and managed."""
-
     regime_mapping: Dict[str, str] = Field(
         default_factory=lambda: {
             "default": "ScalpingStrategy"
@@ -113,13 +98,11 @@ class StrategyManagerSettings(BaseModel):
         description="Mapping from market regime name to Strategy class name.",
     )
 
-
 # --- Model Inference Settings ---
 class ModelInferenceSettings(BaseModel):
     """Settings for loading and using prediction models."""
-
     prediction_model_path: Optional[str] = Field(
-        None, description="Path to the trained prediction model file."
+        None, description="Path to the trained prediction model file."  
     )
     regime_model_path: Optional[str] = Field(
         None, description="Path to the trained market regime model file."
@@ -128,23 +111,19 @@ class ModelInferenceSettings(BaseModel):
         False, description="Whether to use GPU for inference if available."
     )
 
-
 # --- Redis Settings ---
 class RedisSettings(BaseModel):
     """Settings for connecting to Redis."""
-
-    host: str = Field("localhost", description="Redis server host.")
+    host: str = Field("localhost", description="Redis server host.")    
     port: int = Field(6379, description="Redis server port.")
     db: int = Field(0, description="Redis database number.")
     password: Optional[SecretStr] = Field(
         None, description="Redis password (if required)."
     )
 
-
 # --- Main Application Settings ---
 class AppSettings(BaseModel):
-    """Root configuration model bringing all settings together."""
-
+    """Root configuration model bringing all settings together."""      
     app_name: str = Field("HydroBot", description="Name of the application.")
     environment: str = Field(
         "development",
@@ -156,7 +135,7 @@ class AppSettings(BaseModel):
 
     paths: PathSettings = Field(default_factory=PathSettings)
     exchange: ExchangeAPISettings  # Expecting one primary exchange for now
-    trading: TradingSettings = Field(default_factory=TradingSettings)
+    trading: TradingSettings = Field(default_factory=TradingSettings)   
     risk: RiskSettings = Field(default_factory=RiskSettings)
     strategy_manager: StrategyManagerSettings = Field(
         default_factory=StrategyManagerSettings
@@ -167,7 +146,7 @@ class AppSettings(BaseModel):
     momentum_strategy: MomentumStrategySettings = Field(
         default_factory=MomentumStrategySettings
     )
-    mean_reversion_strategy: MeanReversionStrategySettings = Field(
+    mean_reversion_strategy: MeanReversionStrategySettings = Field(     
         default_factory=MeanReversionStrategySettings
     )
     vwap_strategy: VWAPStrategySettings = Field(default_factory=VWAPStrategySettings)
@@ -184,22 +163,20 @@ class AppSettings(BaseModel):
     def environment_to_lower(cls, v):
         return v.lower()
 
-
 # --- Loading Function ---
 def load_config(
     config_file: str = "config/config.yaml", secrets_file: Optional[str] = None
 ) -> AppSettings:
     """
-    Loads configuration from YAML files and environment variables.
-
+    Loads configuration from YAML files and environment variables.      
     Args:
         config_file: Path to the main configuration YAML file.
         secrets_file: Optional path to a secrets YAML file (for API keys, etc.).
-
     Returns:
-        An AppSettings object populated with configuration values.
+        An AppSettings object populated with configuration values.      
     """
     config_data = {}
+    
     if os.path.exists(config_file):
         if yaml is None:
             raise RuntimeError(
@@ -210,13 +187,13 @@ def load_config(
             config_data = yaml.safe_load(f) or {}
     else:
         log.warning(f"Configuration file not found: {config_file}. Using defaults.")
-
-    # Ensure base structure exists before trying to merge secrets
+    
+    # Ensure base structure exists before trying to merge secrets       
     if "exchange" not in config_data:
         config_data["exchange"] = {}
     if "redis" not in config_data:
         config_data["redis"] = {}
-
+    
     if secrets_file and os.path.exists(secrets_file):
         if yaml is None:
             raise RuntimeError(
@@ -231,21 +208,20 @@ def load_config(
                 secrets_data["exchange"], dict
             ):
                 config_data["exchange"].update(secrets_data["exchange"])
-                log.debug("Merged 'exchange' secrets.")            elif "exchange" in secrets_data:
+                log.debug("Merged 'exchange' secrets.")
+            elif "exchange" in secrets_data:
                 log.warning(
-                    "Skipping merge for 'exchange' secrets: "
-                    f"Expected a dictionary, found {type(secrets_data['exchange'])}."
+                    f"Skipping merge for 'exchange' secrets: Expected a dictionary, found {type(secrets_data['exchange'])}."
                 )
-
+            
             if "redis" in secrets_data and isinstance(secrets_data["redis"], dict):
-                config_data["redis"].update(secrets_data["redis"])
+                config_data["redis"].update(secrets_data["redis"])      
                 log.debug("Merged 'redis' secrets.")
             elif "redis" in secrets_data:
                 log.warning(
                     f"Skipping merge for 'redis' secrets: Expected a dictionary, found {type(secrets_data['redis'])}."
                 )
             # --- End FIX ---
-
             # Add other potential secret sections here with similar checks
     elif secrets_file:
         log.warning(f"Secrets file specified but not found: {secrets_file}")
@@ -264,7 +240,6 @@ def load_config(
         config_data["exchange"]["api_key"] = api_key_env  # Assumes exchange dict exists
 
     # ... (rest of the overrides)
-
     try:
         settings = AppSettings(**config_data)
         os.makedirs(settings.paths.log_dir, exist_ok=True)
@@ -274,7 +249,6 @@ def load_config(
     except Exception as e:
         log.exception(f"Error loading or validating configuration: {e}")
         raise
-
 
 # --- Global Configuration Instance ---
 # Load config when the module is imported...
@@ -288,18 +262,17 @@ try:
         )
     else:
         # Fallback if config not in CWD - maybe hydrobot is the CWD? Unlikely.
-        # Let's assume config.yaml MUST be in the root where main.py is run.        log.error(
-            f"Could not find configuration file at '{_default_config_path}'. "
-            "Please ensure config.yaml is in the project root directory."
+        # Let's assume config.yaml MUST be in the root where main.py is run.
+        log.error(
+            f"Could not find configuration file at '{_default_config_path}'. Please ensure config.yaml is in the project root directory."       
         )
         CONFIG = None  # Indicate failure to load
         raise FileNotFoundError(
-            f"Configuration file '{_default_config_path}' not found."
+            f"Configuration file '{_default_config_path}' not found."   
         )
 except Exception:
     log.exception("Failed to initialize configuration during module import.")
     CONFIG = None
-
 
 # --- Helper function to get config ---
 def get_config() -> AppSettings:
@@ -311,7 +284,6 @@ def get_config() -> AppSettings:
         # Attempting to reload might hide the original error. Better to raise.
         raise RuntimeError("Configuration could not be loaded. Check logs for details.")
     return CONFIG
-
 
 # Backwards compatibility - this is the main export that should be used by other modules
 settings = CONFIG

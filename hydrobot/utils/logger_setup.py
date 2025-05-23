@@ -16,17 +16,19 @@ try:
     os.makedirs(LOG_DIR, exist_ok=True)
 except Exception as e:
     # Fallback if config loading fails during setup
-    logging.basicConfig(level=logging.WARNING) # Basic config as fallback
-    logging.warning(f"Could not load config for logger setup: {e}. Using basic logging.")
+    logging.basicConfig(level=logging.WARNING)  # Basic config as fallback
+    logging.warning(
+        f"Could not load config for logger setup: {e}. Using basic logging."
+    )
     LOG_LEVEL = "INFO"
     LOG_DIR = "logs"
     APP_NAME = "hydrobot"
     LOG_FILENAME = os.path.join(LOG_DIR, f"{APP_NAME}_fallback.log")
     # Try creating fallback log dir
     try:
-        os.makedirs(LOG_DIR, exist_ok=True) # Ensure fallback log dir exists
+        os.makedirs(LOG_DIR, exist_ok=True)  # Ensure fallback log dir exists
     except OSError as dir_e:
-         logging.error(f"Could not create fallback log directory '{LOG_DIR}': {dir_e}")
+        logging.error(f"Could not create fallback log directory '{LOG_DIR}': {dir_e}")
 
 
 # --- Global Logger Instance ---
@@ -35,8 +37,8 @@ logger.setLevel(LOG_LEVEL)
 
 if not logger.handlers:
     log_format = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(LOG_LEVEL)
@@ -44,7 +46,7 @@ if not logger.handlers:
     logger.addHandler(console_handler)
     try:
         file_handler = logging.handlers.TimedRotatingFileHandler(
-            LOG_FILENAME, when='midnight', interval=1, backupCount=7, encoding='utf-8'
+            LOG_FILENAME, when="midnight", interval=1, backupCount=7, encoding="utf-8"
         )
         file_handler.setLevel(LOG_LEVEL)
         file_handler.setFormatter(log_format)
@@ -57,6 +59,7 @@ if not logger.handlers:
 else:
     logger.debug("Logger already initialized.")
 
+
 def get_logger(name: str = APP_NAME) -> logging.Logger:
     """Returns the configured logger instance."""
     # Dynamically import settings to avoid circular dependency
@@ -64,7 +67,8 @@ def get_logger(name: str = APP_NAME) -> logging.Logger:
     if name == APP_NAME:
         try:
             from ..config.settings import settings
-            if settings and hasattr(settings, 'app_name'):
+
+            if settings and hasattr(settings, "app_name"):
                 return logging.getLogger(settings.app_name)
         except (ImportError, AttributeError):
             # If settings import fails, just use the default name

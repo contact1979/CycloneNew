@@ -1,17 +1,18 @@
 import asyncio
+import os
 import signal
 import sys
-import os
 from typing import Optional
 
 # Core imports
-from hydrobot.config.settings import get_config, AppSettings
-from hydrobot.utils.logger_setup import get_logger
-from hydrobot.trading.position_manager import PositionManager
+from hydrobot.config.settings import AppSettings, get_config
 from hydrobot.strategies.strategy_manager import StrategyManager
-from hydrobot.trading.risk_controller import RiskController
-from hydrobot.trading.order_executor import OrderExecutor
 from hydrobot.trader import TradingManager
+from hydrobot.trading.order_executor import OrderExecutor
+from hydrobot.trading.position_manager import PositionManager
+from hydrobot.trading.risk_controller import RiskController
+from hydrobot.utils.logger_setup import get_logger
+
 # Placeholder for data stream:
 # from data.market_data_stream import MarketDataStream
 
@@ -30,10 +31,7 @@ shutdown_event = asyncio.Event()
 # --- Signal Handler ---
 def handle_shutdown_signal(sig, frame):
     """Handles OS signals like SIGINT (Ctrl+C) and SIGTERM."""
-    log.warning(
-        f"Received shutdown signal: {sig}. "
-        f"Initiating graceful shutdown..."
-    )
+    log.warning(f"Received shutdown signal: {sig}. " f"Initiating graceful shutdown...")
     shutdown_event.set()
 
 
@@ -69,14 +67,12 @@ class TradingBotApp:
 
         # Risk Controller (needs config, position manager)
         self.risk_controller = RiskController(
-            config=self.config,
-            position_manager=self.position_manager
+            config=self.config, position_manager=self.position_manager
         )
 
         # Order Executor (needs config, position manager)
         self.order_executor = OrderExecutor(
-            config=self.config,
-            position_manager=self.position_manager
+            config=self.config, position_manager=self.position_manager
         )
 
         # Trading Manager (needs all other components)
@@ -85,7 +81,7 @@ class TradingBotApp:
             strategy_manager=self.strategy_manager,
             position_manager=self.position_manager,
             risk_controller=self.risk_controller,
-            order_executor=self.order_executor
+            order_executor=self.order_executor,
             # market_data_stream=self.market_data_stream
         )
         log.info("All components instantiated.")
@@ -147,7 +143,7 @@ async def main():
         # Catch unexpected errors during startup or runtime
         log.critical(f"Unhandled exception in main: {e}", exc_info=True)
         # Ensure shutdown is attempted even if run fails mid-way
-        if 'app' in locals() and app and hasattr(app, 'shutdown'):
+        if "app" in locals() and app and hasattr(app, "shutdown"):
             log.info("Attempting emergency shutdown...")
             await app.shutdown()
         sys.exit(1)

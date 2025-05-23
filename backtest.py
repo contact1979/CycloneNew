@@ -1,20 +1,21 @@
 # backtest.py
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
 import json
 import logging
-from datetime import datetime
 import os
 import sys
-from tabulate import tabulate  # type: ignore
-from colorama import Back, Fore, Style, init  # type: ignore
+from datetime import datetime
 from typing import Any, Dict, List, Mapping, Sequence, Tuple, cast
+
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
+from colorama import Back, Fore, Style, init  # type: ignore
+from tabulate import tabulate  # type: ignore
 
 init(autoreset=True)
 
 # Ensure logs directory exists
-LOG_DIR = 'logs'
+LOG_DIR = "logs"
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -33,7 +34,7 @@ logging.basicConfig(
 
 def load_config() -> Dict[str, Any]:
     try:
-        with open('config.json', 'r') as f:
+        with open("config.json", "r") as f:
             config = cast(Dict[str, Any], json.load(f))
         # Validate config parameters
         required_keys = [
@@ -56,25 +57,25 @@ def load_config() -> Dict[str, Any]:
 config = load_config()
 
 # Extract configuration parameters
-exchanges_config = {ex['name']: ex for ex in config['exchanges']}
-symbol = config['symbol']
-min_profit_percent = config['min_profit_percent']
-trade_amount = config['trade_amount']
-max_trade_amount = config['max_trade_amount']
+exchanges_config = {ex["name"]: ex for ex in config["exchanges"]}
+symbol = config["symbol"]
+min_profit_percent = config["min_profit_percent"]
+trade_amount = config["trade_amount"]
+max_trade_amount = config["max_trade_amount"]
 
 # Map symbols per exchange (if needed)
 exchange_symbol_map = {
-    'binance': symbol,
-    'kraken': symbol.replace('BTC', 'XBT'),
-    'coinbase': symbol,
-    'bitfinex': symbol,
-    'huobi': symbol.replace('USD', 'USDT'),
-    'bittrex': symbol,
-    'poloniex': symbol,
-    'bitstamp': symbol,
-    'gemini': symbol,
-    'okx': symbol.replace('USD', 'USDT'),
-    'kucoin': symbol.replace('USD', 'USDT')
+    "binance": symbol,
+    "kraken": symbol.replace("BTC", "XBT"),
+    "coinbase": symbol,
+    "bitfinex": symbol,
+    "huobi": symbol.replace("USD", "USDT"),
+    "bittrex": symbol,
+    "poloniex": symbol,
+    "bitstamp": symbol,
+    "gemini": symbol,
+    "okx": symbol.replace("USD", "USDT"),
+    "kucoin": symbol.replace("USD", "USDT"),
     # Add more exchanges if needed
 }
 
@@ -88,12 +89,11 @@ def load_historical_data(
         ex_symbol = exchange_symbol_map.get(exchange, symbol)
         filename = f"data/{exchange}_{ex_symbol.replace('/', '')}.csv"
         try:
-            df = pd.read_csv(filename, parse_dates=['timestamp'])
-            df.sort_values('timestamp', inplace=True)
+            df = pd.read_csv(filename, parse_dates=["timestamp"])
+            df.sort_values("timestamp", inplace=True)
             # Ensure timestamps are timezone-naive
-            df['timestamp'] = pd.to_datetime(
-                df['timestamp']).dt.tz_localize(None)
-            df.set_index('timestamp', inplace=True)
+            df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_localize(None)
+            df.set_index("timestamp", inplace=True)
             data[exchange] = df
             logging.info(f"Loaded data for {exchange}")
         except FileNotFoundError:
@@ -107,7 +107,7 @@ def synchronize_data(data: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
     # Merge on timestamp using outer join and forward fill
     df_list = []
     for ex_name, df in data.items():
-        df = df[['bid', 'ask']]
+        df = df[["bid", "ask"]]
         df.columns = pd.MultiIndex.from_product([[ex_name], df.columns])
         df_list.append(df)
     if not df_list:
@@ -127,12 +127,12 @@ def calculate_profit(
     slippage: float = 0.0005,
 ) -> Tuple[float, float]:
     """Calculate profit with fees and slippage.
-    
+
     Slippage applies as: buy prices get worse (higher), sell prices get worse (lower)
     """
     buy_price_with_slip = buy_price * (1 + slippage)
     sell_price_with_slip = sell_price * (1 - slippage)
-    
+
     buy_cost = buy_price_with_slip * amount * (1 + buy_fee)
     sell_revenue = sell_price_with_slip * amount * (1 - sell_fee)
     profit = sell_revenue - buy_cost
@@ -151,17 +151,15 @@ def check_arbitrage_opportunities(
         for sell_ex in exchange_names:
             if buy_ex == sell_ex:
                 continue
-            buy_price = order_books[buy_ex]['ask']
-            sell_price = order_books[sell_ex]['bid']
+            buy_price = order_books[buy_ex]["ask"]
+            sell_price = order_books[sell_ex]["bid"]
             if buy_price and sell_price and buy_price < sell_price:
-                buy_fee = exchanges_config[buy_ex]['fees']['taker']
-                sell_fee = exchanges_config[sell_ex]['fees']['taker']
+                buy_fee = exchanges_config[buy_ex]["fees"]["taker"]
+                sell_fee = exchanges_config[sell_ex]["fees"]["taker"]
 
                 # Calculate maximum amount based on USD balance only
-                max_amount_usd = balances[buy_ex]['USD'] / \
-                    (buy_price * (1 + buy_fee))
-                max_amount = min(
-                    trade_amount, max_trade_amount, max_amount_usd)
+                max_amount_usd = balances[buy_ex]["USD"] / (buy_price * (1 + buy_fee))
+                max_amount = min(trade_amount, max_trade_amount, max_amount_usd)
 
                 if max_amount > 0:
                     profit_percent, profit = calculate_profit(
@@ -192,14 +190,14 @@ def check_arbitrage_opportunities(
                     )
                     if profit_percent >= min_profit_percent:
                         opportunity = {
-                            'buy_exchange': buy_ex,
-                            'sell_exchange': sell_ex,
-                            'buy_price': buy_price,
-                            'sell_price': sell_price,
-                            'profit_percent': profit_percent,
-                            'profit': profit,
-                            'amount': max_amount,
-                            'timestamp': None  # To be set during backtesting
+                            "buy_exchange": buy_ex,
+                            "sell_exchange": sell_ex,
+                            "buy_price": buy_price,
+                            "sell_price": sell_price,
+                            "profit_percent": profit_percent,
+                            "profit": profit,
+                            "amount": max_amount,
+                            "timestamp": None,  # To be set during backtesting
                         }
                         opportunities.append(opportunity)
     return opportunities
@@ -210,24 +208,24 @@ def simulate_trade(
     opportunity: Mapping[str, Any],
     exchanges_config: Mapping[str, Mapping[str, Any]],
 ) -> bool:
-    buy_ex = opportunity['buy_exchange']
-    sell_ex = opportunity['sell_exchange']
-    amount = opportunity['amount']
-    buy_price = opportunity['buy_price']
-    sell_price = opportunity['sell_price']
-    buy_fee = exchanges_config[buy_ex]['fees']['taker']
-    sell_fee = exchanges_config[sell_ex]['fees']['taker']
+    buy_ex = opportunity["buy_exchange"]
+    sell_ex = opportunity["sell_exchange"]
+    amount = opportunity["amount"]
+    buy_price = opportunity["buy_price"]
+    sell_price = opportunity["sell_price"]
+    buy_fee = exchanges_config[buy_ex]["fees"]["taker"]
+    sell_fee = exchanges_config[sell_ex]["fees"]["taker"]
 
     cost = amount * buy_price * (1 + buy_fee)
     revenue = amount * sell_price * (1 - sell_fee)
 
     # Check if sufficient USD balance exists for buying
-    if balances[buy_ex]['USD'] >= cost:
+    if balances[buy_ex]["USD"] >= cost:
         # Execute the trade
-        balances[buy_ex]['USD'] -= cost
-        balances[sell_ex]['USD'] += revenue
+        balances[buy_ex]["USD"] -= cost
+        balances[sell_ex]["USD"] += revenue
 
-    # No need to adjust BTC balances because buy and sell are immediate
+        # No need to adjust BTC balances because buy and sell are immediate
 
         logging.info(
             "Trade executed: Buy %s BTC on %s at %s, Sell on %s at %s",
@@ -240,8 +238,7 @@ def simulate_trade(
         return True
     else:
         logging.warning(
-            "Insufficient USD balance for trade on %s. "
-            "Required: %s, Available: %s",
+            "Insufficient USD balance for trade on %s. " "Required: %s, Available: %s",
             buy_ex,
             cost,
             balances[buy_ex]["USD"],
@@ -256,67 +253,67 @@ def backtest(
 ) -> Tuple[Dict[str, Dict[str, float]], List[Dict[str, Any]]]:
     exchange_names = df_merged.columns.levels[0]
     # Initialize balances with USD only
-    balances = {ex: {'USD': initial_balance, 'BTC': 0}
-                for ex in exchange_names}
+    balances = {ex: {"USD": initial_balance, "BTC": 0} for ex in exchange_names}
     trade_log = []
 
     for timestamp, row in df_merged.iterrows():
         order_books = {}
         for ex in exchange_names:
-            bid = row.get((ex, 'bid'), None)
-            ask = row.get((ex, 'ask'), None)
-            order_books[ex] = {'bid': bid, 'ask': ask}
+            bid = row.get((ex, "bid"), None)
+            ask = row.get((ex, "ask"), None)
+            order_books[ex] = {"bid": bid, "ask": ask}
 
         # Check for arbitrage opportunities
         opportunities = check_arbitrage_opportunities(
-            exchanges_config, order_books, balances)
+            exchanges_config, order_books, balances
+        )
 
         # Simulate trades
         for opp in opportunities:
-            opp['timestamp'] = timestamp
+            opp["timestamp"] = timestamp
             success = simulate_trade(balances, opp, exchanges_config)
             if success:
-                trade_log.append({
-                    'timestamp': timestamp,
-                    **opp
-                })
+                trade_log.append({"timestamp": timestamp, **opp})
     return balances, trade_log
 
 
 def calculate_advanced_metrics(trade_log_df: pd.DataFrame) -> Dict[str, Any]:
     df = trade_log_df.copy()
 
-    avg_profit_per_trade = df['profit'].mean()
-    largest_profit = df['profit'].max()
-    largest_loss = df['profit'].min()
+    avg_profit_per_trade = df["profit"].mean()
+    largest_profit = df["profit"].max()
+    largest_loss = df["profit"].min()
 
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df.loc[:, 'duration'] = df['timestamp'].diff()
-    df = df.dropna(subset=['duration'])
-    df.loc[:, 'duration'] = pd.to_timedelta(df['duration'])
-    avg_trade_duration = df['duration'].mean()
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df.loc[:, "duration"] = df["timestamp"].diff()
+    df = df.dropna(subset=["duration"])
+    df.loc[:, "duration"] = pd.to_timedelta(df["duration"])
+    avg_trade_duration = df["duration"].mean()
     avg_trade_duration_in_minutes = avg_trade_duration.total_seconds() / 60
 
-    trade_frequency = len(df) / len(df['timestamp'].unique())
+    trade_frequency = len(df) / len(df["timestamp"].unique())
 
-    df.loc[:, 'return'] = df['profit'] / (df['buy_price'] * df['amount'])
-    total_return = df['return'].sum()
-    days = (df['timestamp'].max() - df['timestamp'].min()).days
-    annualized_return = (1 + total_return) ** (365 /
-                                               days) - 1 if days > 0 else 0
+    df.loc[:, "return"] = df["profit"] / (df["buy_price"] * df["amount"])
+    total_return = df["return"].sum()
+    days = (df["timestamp"].max() - df["timestamp"].min()).days
+    annualized_return = (1 + total_return) ** (365 / days) - 1 if days > 0 else 0
 
-    sharpe_ratio = np.sqrt(365) * df['return'].mean() / df['return'].std()
-    downside_returns = df[df['return'] < 0]['return']
-    sortino_ratio = np.sqrt(365) * df['return'].mean() / \
-        downside_returns.std() if len(downside_returns) > 0 else np.inf
+    sharpe_ratio = np.sqrt(365) * df["return"].mean() / df["return"].std()
+    downside_returns = df[df["return"] < 0]["return"]
+    sortino_ratio = (
+        np.sqrt(365) * df["return"].mean() / downside_returns.std()
+        if len(downside_returns) > 0
+        else np.inf
+    )
 
-    cumulative_returns = (1 + df['return']).cumprod()
+    cumulative_returns = (1 + df["return"]).cumprod()
     peak = cumulative_returns.expanding(min_periods=1).max()
-    drawdown = (cumulative_returns / peak - 1)
+    drawdown = cumulative_returns / peak - 1
     max_drawdown = drawdown.min()
 
-    calmar_ratio = annualized_return / \
-        abs(max_drawdown) if max_drawdown != 0 else np.inf
+    calmar_ratio = (
+        annualized_return / abs(max_drawdown) if max_drawdown != 0 else np.inf
+    )
 
     return {
         "Trade Frequency": trade_frequency,
@@ -344,13 +341,13 @@ def color_profit(value: str) -> str:
 
 def main_backtest() -> None:
     # Option to run full backtest or with specific exchanges
-    if len(sys.argv) > 1 and sys.argv[1] == 'partial':
+    if len(sys.argv) > 1 and sys.argv[1] == "partial":
         # Run backtest with Coinbase and Bitfinex only
-        exchange_names = ['bitfinex', 'coinbase']
+        exchange_names = ["bitfinex", "coinbase"]
         logging.info("Running backtest with Coinbase and Bitfinex only.")
     else:
         # Run full backtest with all exchanges
-        exchange_names = [ex['name'] for ex in config['exchanges']]
+        exchange_names = [ex["name"] for ex in config["exchanges"]]
         logging.info("Running full backtest with all exchanges.")
 
     # Load and synchronize historical data
@@ -363,14 +360,13 @@ def main_backtest() -> None:
     initial_balance = config["initial_balance"]
 
     # Run backtest
-    balances, trade_log = backtest(
-        df_merged, exchanges_config, initial_balance)
+    balances, trade_log = backtest(df_merged, exchanges_config, initial_balance)
 
     # Convert trade_log to DataFrame
     trade_log_df = pd.DataFrame(trade_log)
 
     # Calculate performance metrics
-    total_profit = sum(trade['profit'] for trade in trade_log)
+    total_profit = sum(trade["profit"] for trade in trade_log)
     logging.info(f"Total Profit: ${total_profit:.2f}")
     logging.info(f"Final Balances: {balances}")
 
@@ -378,7 +374,7 @@ def main_backtest() -> None:
     end_time = datetime.strptime("2021-01-01 03:47:00", "%Y-%m-%d %H:%M:%S")
     time_diff = end_time - start_time
 
-    total_profit = trade_log_df['profit'].sum()
+    total_profit = trade_log_df["profit"].sum()
 
     summary_data = [
         ["Total Profit", f"{Fore.GREEN}${total_profit:.2f}{Style.RESET_ALL}"],
@@ -437,7 +433,7 @@ def main_backtest() -> None:
             "Avg Trade Duration",
             f"{advanced_metrics['Avg Trade Duration']:.2f} minutes",
         ],
-        ["Total Return", f"{advanced_metrics['Total Return']:.2%}"]
+        ["Total Return", f"{advanced_metrics['Total Return']:.2%}"],
     ]
 
     print("\nAdvanced Metrics")
@@ -462,7 +458,7 @@ def main_backtest() -> None:
                 f"{Style.RESET_ALL}"
             ),
         ],
-        ["Most Common Pair", "Coinbase (Buy) -> Bitfinex (Sell)"]
+        ["Most Common Pair", "Coinbase (Buy) -> Bitfinex (Sell)"],
     ]
 
     print("\nAdditional Statistics")
@@ -481,9 +477,9 @@ def main_backtest() -> None:
 
     if not trade_log_df.empty:
         trade_log_df_display = trade_log_df.copy()
-        trade_log_df_display["timestamp"] = (
-            trade_log_df_display["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
-        )
+        trade_log_df_display["timestamp"] = trade_log_df_display[
+            "timestamp"
+        ].dt.strftime("%Y-%m-%d %H:%M:%S")
         trade_log_df_display["profit"] = trade_log_df_display["profit"].apply(
             lambda x: color_profit(f"${x:.2f}")
         )
@@ -504,15 +500,14 @@ def main_backtest() -> None:
         ]
 
         # Select 3 rows with different profits
-        sample_rows = trade_log_df_display.drop_duplicates(
-            'profit').sample(n=3)
+        sample_rows = trade_log_df_display.drop_duplicates("profit").sample(n=3)
 
         # If we couldn't get 3 unique profit values, just take 3 random rows
         if len(sample_rows) < 3:
             sample_rows = trade_log_df_display.sample(n=3)
 
         # Sort the sample rows by timestamp
-        sample_rows = sample_rows.sort_values('timestamp')
+        sample_rows = sample_rows.sort_values("timestamp")
 
         print(
             f"\n{Fore.CYAN}{Back.BLACK}"
@@ -546,9 +541,9 @@ def main_backtest() -> None:
     print("\n" * 5)
 
     # Save trade log to CSV
-    trade_log_df.to_csv('trade_log.csv', index=False)
+    trade_log_df.to_csv("trade_log.csv", index=False)
     logging.info("Trade log saved to trade_log.csv")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main_backtest()

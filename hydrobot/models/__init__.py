@@ -1,8 +1,8 @@
 """Machine learning models for HydroBot."""
 
-from .prediction_model import PredictionModel
-from .regime_model import RegimeClassifier, MarketRegime
 from .inference import ModelInference
+from .prediction_model import PredictionModel
+from .regime_model import MarketRegime, RegimeClassifier
 from .trainer import ModelTrainer
 
 __all__ = [

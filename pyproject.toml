@@ -56,6 +56,14 @@ include = '\.pyi?$'
 [tool.isort]
 profile = "black"
 line_length = 88
+<<<<<<< HEAD
+=======
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+>>>>>>> 2ee8954 (WIP: Stage all local changes before rebase to resolve branch divergence and enable push. Includes linting, code quality, and other local modifications.)
 
 [tool.mypy]
 python_version = "3.9"

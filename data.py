@@ -1,19 +1,20 @@
 # data.py
 
-import ccxt
-import pandas as pd
-import time
-import os
 import logging
+import os
+import time
 from datetime import datetime, timezone
 
+import ccxt
+import pandas as pd
+
 # Ensure data directory exists
-DATA_DIR = 'data'
+DATA_DIR = "data"
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
 # Configure logging
-LOG_DIR = 'logs'
+LOG_DIR = "logs"
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -30,30 +31,37 @@ logging.basicConfig(
 # Add a console handler to see logs in real-time
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
+logging.getLogger("").addHandler(console)
 
 exchanges = [
-    'binanceus', 'coinbase', 'kraken', 'bitfinex', 'gemini',
-    'kucoin', 'okx', 'poloniex', 'bitstamp'
+    "binanceus",
+    "coinbase",
+    "kraken",
+    "bitfinex",
+    "gemini",
+    "kucoin",
+    "okx",
+    "poloniex",
+    "bitstamp",
 ]
-symbol = 'BTC/USD'
+symbol = "BTC/USD"
 
 exchange_symbol_map = {
-    'binanceus': 'BTC/USD',
-    'coinbase': 'BTC/USD',
-    'kraken': 'BTC/USD',
-    'bitfinex': 'BTC/USD',
-    'gemini': 'BTC/USD',
-    'kucoin': 'BTC/USDT',
-    'okx': 'BTC/USDT',
-    'poloniex': 'BTC/USDT',
-    'bitstamp': 'BTC/USD',
+    "binanceus": "BTC/USD",
+    "coinbase": "BTC/USD",
+    "kraken": "BTC/USD",
+    "bitfinex": "BTC/USD",
+    "gemini": "BTC/USD",
+    "kucoin": "BTC/USDT",
+    "okx": "BTC/USDT",
+    "poloniex": "BTC/USDT",
+    "bitstamp": "BTC/USD",
 }
 
-start_date = '2021-01-01T00:00:00Z'
-end_date = '2021-01-08T00:00:00Z'
+start_date = "2021-01-01T00:00:00Z"
+end_date = "2021-01-08T00:00:00Z"
 
 
 def collect_data():
@@ -61,7 +69,7 @@ def collect_data():
         logging.info(f"Starting data collection for {exchange_id}")
         try:
             exchange_class = getattr(ccxt, exchange_id)
-            exchange = exchange_class({'enableRateLimit': True})
+            exchange = exchange_class({"enableRateLimit": True})
 
             ex_symbol = exchange_symbol_map.get(exchange_id, symbol)
             logging.info(f"Using symbol {ex_symbol} for {exchange_id}")
@@ -80,18 +88,17 @@ def collect_data():
             all_tickers = []
             since = exchange.parse8601(start_date)
             end_time = exchange.parse8601(end_date)
-            timeframe = '1m'
+            timeframe = "1m"
             limit = 1000
 
-            logging.info(
-                f"Fetching data from {exchange_id} for {ex_symbol}..."
-            )
+            logging.info(f"Fetching data from {exchange_id} for {ex_symbol}...")
             logging.info(f"Start date: {start_date}, End date: {end_date}")
 
             while since < end_time:
                 try:
                     ohlcv = exchange.fetch_ohlcv(
-                        ex_symbol, timeframe=timeframe, since=since, limit=limit)
+                        ex_symbol, timeframe=timeframe, since=since, limit=limit
+                    )
                     if not ohlcv:
                         logging.warning(
                             f"No OHLCV data returned for {exchange_id} at timestamp {since}"
@@ -105,14 +112,17 @@ def collect_data():
                             break
 
                         ticker = exchange.fetch_ticker(ex_symbol)
-                        all_tickers.append({
-                            'timestamp': datetime.fromtimestamp(timestamp / 1000, timezone.utc),
-                            'bid': ticker['bid'],
-                            'ask': ticker['ask']
-                        })
+                        all_tickers.append(
+                            {
+                                "timestamp": datetime.fromtimestamp(
+                                    timestamp / 1000, timezone.utc
+                                ),
+                                "bid": ticker["bid"],
+                                "ask": ticker["ask"],
+                            }
+                        )
 
-                    since = ohlcv[-1][0] + \
-                        exchange.parse_timeframe(timeframe) * 1000
+                    since = ohlcv[-1][0] + exchange.parse_timeframe(timeframe) * 1000
                     logging.info(
                         f"Fetched data for {exchange_id} up to {datetime.fromtimestamp(since / 1000, timezone.utc)}"
                     )
@@ -126,26 +136,22 @@ def collect_data():
 
             if all_tickers:
                 df = pd.DataFrame(all_tickers)
-                df.set_index('timestamp', inplace=True)
+                df.set_index("timestamp", inplace=True)
 
                 filename = f"{DATA_DIR}/{exchange_id}_{ex_symbol.replace('/', '')}.csv"
                 df.to_csv(filename)
-                logging.info(
-                    f"Data saved to {filename}. Total records: {len(df)}"
-                )
+                logging.info(f"Data saved to {filename}. Total records: {len(df)}")
             else:
                 logging.warning(f"No data collected for {exchange_id}")
 
         except Exception as e:
-            logging.error(
-                f"Unexpected error collecting data from {exchange_id}: {e}"
-            )
+            logging.error(f"Unexpected error collecting data from {exchange_id}: {e}")
             continue
 
         logging.info(f"Completed data collection for {exchange_id}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.info("Starting data collection process")
     collect_data()
     logging.info("Data collection process completed")

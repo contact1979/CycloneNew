@@ -17,10 +17,6 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# (Optional) Install dev dependencies if file exists
-COPY dev-requirements.txt .
-RUN if [ -f dev-requirements.txt ]; then pip install --no-cache-dir -r dev-requirements.txt; fi
-
 # Copy the rest of your code
 COPY . .
 

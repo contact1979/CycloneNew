@@ -1,23 +1,31 @@
 """Core ML prediction utilities."""
 
-import logging
-import pandas as pd
-import numpy as np
-import joblib
-import os
 import json
-from typing import Optional, Tuple, Dict, Any
+import logging
+import os
+import datetime
+import pytz
+from typing import Any, Dict, Optional, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
+from feature_engineering.feature_generator import preprocess_backfill_data
 
 # Use absolute imports assuming 'cyclonev2' is the project root added to PYTHONPATH
 from hydrobot import config
-from hydrobot.models.trainer import MODEL_DIR, MODEL_FILENAME, MODEL_METADATA_FILENAME  # Import constants
-from feature_engineering.feature_generator import preprocess_backfill_data
+from hydrobot.models.trainer import (  # Import constants
+    MODEL_DIR,
+    MODEL_FILENAME,
+    MODEL_METADATA_FILENAME,
+)
 
 log = logging.getLogger(__name__)
 
 # --- Model Loading ---
 _loaded_model = None
 _model_metadata = None
+
 
 def load_model_and_metadata() -> Optional[Tuple[Any, Dict]]:
     """
@@ -31,21 +39,22 @@ def load_model_and_metadata() -> Optional[Tuple[Any, Dict]]:
     global _loaded_model, _model_metadata
     if _loaded_model is None:
         model_path = os.path.join(MODEL_DIR, MODEL_FILENAME)
-        metadata_path = os.path.join(MODEL_DIR, MODEL_METADATA_FILENAME)
-
-        if not os.path.exists(model_path) or not os.path.exists(metadata_path):
-            log.error(f"Model file '{model_path}' or metadata file '{metadata_path}' not found. Cannot load model.")
+        metadata_path = os.path.join(MODEL_DIR, MODEL_METADATA_FILENAME)        if not os.path.exists(model_path) or not os.path.exists(metadata_path):
+            log.error(
+                f"Model file '{model_path}' or metadata file '{metadata_path}' not found. Cannot load model."
+            )
             return None
 
-        try:
-            log.info(f"Loading model from: {model_path}")
+        try:            log.info("Loading model from: {}".format(model_path))
             _loaded_model = joblib.load(model_path)
-            log.info(f"Model loaded successfully.")
+            log.info("Model loaded successfully.")
 
-            log.info(f"Loading metadata from: {metadata_path}")
-            with open(metadata_path, 'r') as f:
+            log.info("Loading metadata from: {}".format(metadata_path))
+            with open(metadata_path, "r") as f:
                 _model_metadata = json.load(f)
-            log.info(f"Metadata loaded successfully. Model trained on {len(_model_metadata.get('feature_names', []))} features.")
+            log.info(
+                "Metadata loaded successfully. Model trained on {} features.".format(len(_model_metadata.get('feature_names', [])))
+            )
 
         except Exception as e:
             log.error(f"Error loading model or metadata: {e}", exc_info=True)
@@ -53,6 +62,7 @@ def load_model_and_metadata() -> Optional[Tuple[Any, Dict]]:
             _model_metadata = None
 
     return _loaded_model, _model_metadata
+
 
 def load_model(model_path="trained_models/random_forest_model.joblib"):
     """
@@ -72,7 +82,9 @@ def load_model(model_path="trained_models/random_forest_model.joblib"):
         print(f"Error loading model: {e}")
         return None
 
+
 # --- Prediction Function ---
+
 
 def make_prediction(latest_features_df: pd.DataFrame) -> Optional[Tuple[int, float]]:
     """
@@ -95,10 +107,12 @@ def make_prediction(latest_features_df: pd.DataFrame) -> Optional[Tuple[int, flo
         return None
 
     model, metadata = model_info
-    required_features = metadata.get('feature_names')
+    required_features = metadata.get("feature_names")
 
     if not required_features:
-        log.error("Model metadata does not contain feature names. Cannot ensure feature consistency.")
+        log.error(
+            "Model metadata does not contain feature names. Cannot ensure feature consistency."
+        )
         return None
 
     if latest_features_df.empty:
@@ -112,19 +126,26 @@ def make_prediction(latest_features_df: pd.DataFrame) -> Optional[Tuple[int, flo
 
         # Check for NaNs in the input features for this prediction step
         if features_for_prediction.isnull().values.any():
-            nan_cols = features_for_prediction.columns[features_for_prediction.isnull().any()].tolist()
-            log.warning(f"NaN values detected in features for prediction: {nan_cols}. Attempting imputation with 0.")
+            nan_cols = features_for_prediction.columns[
+                features_for_prediction.isnull().any()
+            ].tolist()
+            log.warning(
+                f"NaN values detected in features for prediction: {nan_cols}. Attempting imputation with 0."
+            )
             # Apply the same imputation used during training (assuming 0 for simplicity)
             features_for_prediction = features_for_prediction.fillna(0)
             # If a different imputation was used in training, apply that here.
 
         # Ensure only one row is passed for prediction
         if len(features_for_prediction) > 1:
-             log.warning(f"Prediction input DataFrame has {len(features_for_prediction)} rows. Using the last row.")
-             features_for_prediction = features_for_prediction.tail(1)
+            log.warning(
+                f"Prediction input DataFrame has {len(features_for_prediction)} rows. Using the last row."
+            )
+            features_for_prediction = features_for_prediction.tail(1)
 
-
-        log.debug(f"Making prediction on features: {features_for_prediction.columns.tolist()}")
+        log.debug(
+            f"Making prediction on features: {features_for_prediction.columns.tolist()}"
+        )
 
         # Predict probability (returns array of shape [n_samples, n_classes])
         probabilities = model.predict_proba(features_for_prediction)
@@ -135,15 +156,21 @@ def make_prediction(latest_features_df: pd.DataFrame) -> Optional[Tuple[int, flo
         # Get predicted class (0 or 1)
         prediction = int(model.predict(features_for_prediction)[0])
 
-        log.info(f"Prediction successful. Class: {prediction}, Probability(Class 1): {prob_class_1:.4f}")
+        log.info(
+            f"Prediction successful. Class: {prediction}, Probability(Class 1): {prob_class_1:.4f}"
+        )
         return prediction, prob_class_1
 
     except KeyError as e:
-        log.error(f"Feature mismatch during prediction. Missing feature: {e}. Required: {required_features}", exc_info=True)
+        log.error(
+            f"Feature mismatch during prediction. Missing feature: {e}. Required: {required_features}",
+            exc_info=True,
+        )
         return None
     except Exception as e:
         log.error(f"Error during prediction: {e}", exc_info=True)
         return None
+
 
 def make_predictions():
     """
@@ -158,18 +185,22 @@ def make_predictions():
     data = preprocess_backfill_data()
 
     # Ensure the target column is not included in the prediction data
-    if 'target' in data.columns:
-        data = data.drop(columns=['target'])
+    if "target" in data.columns:
+        data = data.drop(columns=["target"])
 
     # Make predictions
     predictions = model.predict(data)
     print("Predictions:")
     print(predictions)
 
+
 # --- Example Usage (for testing) ---
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Setup basic logging for direct script run
-    logging.basicConfig(level=config.LOG_LEVEL, format='%(asctime)s - %(levelname)s [%(name)s] %(message)s')
+    logging.basicConfig(
+        level=config.LOG_LEVEL,
+        format="%(asctime)s - %(levelname)s [%(name)s] %(message)s",
+    )
 
     print("--- Testing Model Predictor ---")
 
@@ -188,23 +219,28 @@ if __name__ == '__main__':
         # --- Generate Sample Features for Prediction ---
         # In a real run, this would come from feature_generator using the latest available data
         print("\nGenerating sample features for prediction (using latest data)...")
-        from feature_engineering import feature_generator # Import here for testing
-        test_symbol = 'BTCUSDT' # Use a symbol likely trained on
+        from feature_engineering import feature_generator  # Import here for testing
+        import datetime
+        import pytz
+
+        test_symbol = "BTCUSDT"  # Use a symbol likely trained on
         # Use current time to get the very latest features possible
         pred_time = datetime.datetime.now(pytz.utc)
         # Need enough history to calculate lags/rolling features for the *single* prediction point
-        hist_for_pred = pd.Timedelta(days=3) # Adjust as needed based on longest lookback
+        hist_for_pred = pd.Timedelta(
+            days=3
+        )  # Adjust as needed based on longest lookback
 
         latest_features = feature_generator.generate_features_for_symbol(
-            symbol=test_symbol,
-            end_time_utc=pred_time,
-            history_duration=hist_for_pred
+            symbol=test_symbol, end_time_utc=pred_time, history_duration=hist_for_pred
         )
 
         if latest_features is not None and not latest_features.empty:
             # Get the single most recent row of features
             prediction_input_df = latest_features.tail(1)
-            print(f"Generated {len(prediction_input_df)} row(s) of features for prediction.")
+            print(
+                f"Generated {len(prediction_input_df)} row(s) of features for prediction."
+            )
             # print(prediction_input_df) # Optionally print the feature row
 
             # --- Make Prediction ---
@@ -218,9 +254,10 @@ if __name__ == '__main__':
             else:
                 print("\nFailed to make prediction. Check logs.")
         else:
-            print("\nFailed to generate features for prediction input. Cannot test predictor.")
+            print(
+                "\nFailed to generate features for prediction input. Cannot test predictor."
+            )
 
     make_predictions()
 
     print("\n--- Test Complete ---")
-

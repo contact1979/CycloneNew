@@ -10,9 +10,6 @@ if (!(Test-Path 'venv')) {
 .\venv\Scripts\Activate
 
 pip install -r requirements.txt
-if (Test-Path 'dev-requirements.txt') {
-    pip install -r dev-requirements.txt
-}
 
 if ($Check) {
     $env:PYTHONUNBUFFERED = '1'

@@ -20,28 +20,34 @@ maximum account drawdown percentage. Position sizing is capped by the
 
 
 ## Features
-* Modular architecture with strategies, trading utilities and data ingestion modules.
-* Configuration via `config/config.yaml` with secrets in `secrets.yaml` or environment variables.
-* Docker deployment with Redis and an optional PostgreSQL service.
-* Test suite using `pytest`.
+
+- Modular architecture with strategies, trading utilities and data ingestion modules.
+- Configuration via `config/config.yaml` with secrets in `secrets.yaml` or environment variables.
+- Docker deployment with Redis and an optional PostgreSQL service.
+- Test suite using `pytest`.
 
 ## Quickstart
 
 ### Prerequisites
-* Python 3.11+
-* `pip` for dependency management
+
+- Python 3.11+
+- `pip` for dependency management
 
 ### Local Run
+
 ```bash
 ./setup.sh
 python main.py
 ```
 
 ### Docker Compose
+
 Build and run all services with:
+
 ```bash
 docker-compose up --build
 ```
+
 This starts HydroBot, Redis and PostgreSQL containers.
 The compose file mounts `./logs` and `./data` as volumes so logs and market
 data persist across runs.
@@ -49,6 +55,7 @@ data persist across runs.
 For database persistence you can mount a volume for PostgreSQL as shown in `docker-compose.yml`.
 
 For running tests in Docker:
+
 ```bash
 docker-compose -f docker-compose.tests.yml up --build
 ```
@@ -77,7 +84,9 @@ python main.py --config config.yaml
 ```
 
 ### Windows Setup
+
 Use the provided PowerShell script to create a virtual environment and install packages:
+
 ```powershell
 ./setup.ps1
 ```
@@ -93,6 +102,7 @@ Run the helper script to format and lint the codebase:
 `dev-requirements.txt`.
 
 ## Directory Structure
+
 ```
 hydrobot/       # core package
 config/         # configuration files
@@ -103,4 +113,5 @@ utils/          # shared utilities
 ```
 
 ## License
+
 MIT

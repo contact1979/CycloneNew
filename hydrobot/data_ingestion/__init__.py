@@ -1,7 +1,7 @@
 """Market data ingestion utilities."""
 
 try:
-    from .market_data_stream import OrderBook, MarketDataStream
+    from .market_data_stream import MarketDataStream, OrderBook
 except Exception:  # pragma: no cover - optional deps
     OrderBook = MarketDataStream = None
 

@@ -5,14 +5,17 @@ This document lists all third-party code, components, and libraries used in the 
 ## Core Libraries & Dependencies
 
 - **CCXT** - MIT License
+
   - Used for cryptocurrency exchange integrations
   - <https://github.com/ccxt/ccxt>
 
 - **pandas-ta** - MIT License
+
   - Technical analysis calculations
   - <https://github.com/twopirllc/pandas-ta>
 
 - **Streamlit** - Apache License 2.0
+
   - Dashboard interface
   - <https://github.com/streamlit/streamlit>
 

@@ -1,10 +1,10 @@
 # HydroBot – Product Requirements Document (Autonomous Crypto Trading System)
 
-**Version:** 2.2 (Merged Detailed Requirements)  
-**Date:** 2025-04-22  
+**Version:** 2.2 (Merged Detailed Requirements)\
+**Date:** 2025-04-22\
 **Status:** Final
 
----
+______________________________________________________________________
 
 ## 1. Introduction
 
@@ -37,7 +37,7 @@ This document defines the full set of features for HydroBot's initial release (P
 - Advanced dashboard analytics (multi-timeframe views, replay, ML overlays)
 - Full CI/CD automation (to be integrated with Azure DevOps or GitHub Actions)
 
----
+______________________________________________________________________
 
 ## 2. Goals
 
@@ -49,7 +49,7 @@ This document defines the full set of features for HydroBot's initial release (P
 - **Safety**: Enforce hard risk constraints to protect capital and avoid catastrophic failures.
 - **Observability**: Expose logs and performance metrics through Prometheus and Azure Monitor.
 
----
+______________________________________________________________________
 
 ## 3. Use Cases / User Stories
 
@@ -80,42 +80,42 @@ This document defines the full set of features for HydroBot's initial release (P
 - Log all actions, store in PostgreSQL, expose Prometheus metrics.
 - Use ML models (if enabled) to refine decisions.
 
----
+______________________________________________________________________
 
 ## 4. Features & Requirements
 
 ### 4.1 Functional Requirements
 
-| Feature | Description | Priority |
-|--------|-------------|----------|
-| Strategy Pipeline | Arbitrage and scalping with optional indicator/ML filtering | Must |
-| Exchange Integration | Binance US & Kraken API support (REST/WebSocket) | Must |
-| Order Execution | Asynchronous, concurrent FOK/IOC trading logic with fallback | Must |
-| Technical Indicators | RSI, SMA, MACD, Volume Z-score spikes | Should |
-| Machine Learning Layer | Optional predictive models (LightGBM, regime classifier) | Should |
-| Risk Control | Exposure limits, latency filters, drawdown thresholds, stop-loss, panic shutdown | Must |
-| Simulated Trading | Paper trading support for full test loop | Must |
-| Live Trading | Toggle switch with real fund execution | Must |
-| Configuration | Centralized YAML/.env config with Azure Key Vault integration | Must |
-| Logging & Monitoring | JSON logging, Prometheus metrics, Azure Application Insights | Must |
-| Dashboard | Dash dashboard with real-time monitoring, metrics, and control toggles | Must |
-| Database | PostgreSQL for trades, logs, configs, and model outputs | Must |
-| Backtesting | Run strategies over OHLCV data with slippage/fill simulation | Must |
-| Scripts | CLI support for backfill, config updates, and one-off tasks | Must |
+| Feature                | Description                                                                      | Priority |
+| ---------------------- | -------------------------------------------------------------------------------- | -------- |
+| Strategy Pipeline      | Arbitrage and scalping with optional indicator/ML filtering                      | Must     |
+| Exchange Integration   | Binance US & Kraken API support (REST/WebSocket)                                 | Must     |
+| Order Execution        | Asynchronous, concurrent FOK/IOC trading logic with fallback                     | Must     |
+| Technical Indicators   | RSI, SMA, MACD, Volume Z-score spikes                                            | Should   |
+| Machine Learning Layer | Optional predictive models (LightGBM, regime classifier)                         | Should   |
+| Risk Control           | Exposure limits, latency filters, drawdown thresholds, stop-loss, panic shutdown | Must     |
+| Simulated Trading      | Paper trading support for full test loop                                         | Must     |
+| Live Trading           | Toggle switch with real fund execution                                           | Must     |
+| Configuration          | Centralized YAML/.env config with Azure Key Vault integration                    | Must     |
+| Logging & Monitoring   | JSON logging, Prometheus metrics, Azure Application Insights                     | Must     |
+| Dashboard              | Dash dashboard with real-time monitoring, metrics, and control toggles           | Must     |
+| Database               | PostgreSQL for trades, logs, configs, and model outputs                          | Must     |
+| Backtesting            | Run strategies over OHLCV data with slippage/fill simulation                     | Must     |
+| Scripts                | CLI support for backfill, config updates, and one-off tasks                      | Must     |
 
 ### 4.2 Non-Functional Requirements
 
-| Requirement | Description |
-|------------|-------------|
-| Performance | <500ms from detection to execution (arbitrage/scalp) |
-| Security | API keys in Azure Key Vault, `.env` only for local/dev |
-| Deployability | Docker + Kubernetes manifests for Azure (AKS-ready) |
-| Observability | Full log, error, and performance telemetry to Azure Monitor |
+| Requirement     | Description                                                        |
+| --------------- | ------------------------------------------------------------------ |
+| Performance     | \<500ms from detection to execution (arbitrage/scalp)              |
+| Security        | API keys in Azure Key Vault, `.env` only for local/dev             |
+| Deployability   | Docker + Kubernetes manifests for Azure (AKS-ready)                |
+| Observability   | Full log, error, and performance telemetry to Azure Monitor        |
 | Maintainability | PEP8 code style, modular structure, test coverage, typed functions |
-| Testability | Unit tests + E2E via simulation and backtest environment |
-| Scalability | Add new pairs, exchanges, and strategies without core rewrites |
+| Testability     | Unit tests + E2E via simulation and backtest environment           |
+| Scalability     | Add new pairs, exchanges, and strategies without core rewrites     |
 
----
+______________________________________________________________________
 
 ## 5. Design & Architecture
 
@@ -146,7 +146,7 @@ hydrobot/
 ├── main.py              # Entry point: launch bot
 ```
 
----
+______________________________________________________________________
 
 ## 6. Deliverables
 
@@ -160,7 +160,7 @@ hydrobot/
 - `requirements.txt`, `.env.example`, `README.md`
 - Backtest and data collection scripts
 
----
+______________________________________________________________________
 
 ## 7. Future Enhancements
 
@@ -171,17 +171,16 @@ hydrobot/
 - Exchange expansion (Coinbase Pro, KuCoin)
 - Multi-user support if productized
 
----
+______________________________________________________________________
 
 ## 8. Open Issues / Pending Decisions
 
 1. Finalize latency threshold by exchange and bot stage (data → signal → order)
-2. Choose messaging layer for live bot → dashboard sync (Redis, WebSocket, DB polling)
-3. Decide final evaluation metrics for ML (Sharpe ratio vs. F1-score vs. ROI delta)
-4. Clarify persistent vs. in-memory strategy state (recovery after crash)
-5. Determine fallback logic for exchange downtime
+1. Choose messaging layer for live bot → dashboard sync (Redis, WebSocket, DB polling)
+1. Decide final evaluation metrics for ML (Sharpe ratio vs. F1-score vs. ROI delta)
+1. Clarify persistent vs. in-memory strategy state (recovery after crash)
+1. Determine fallback logic for exchange downtime
 
----
+______________________________________________________________________
 
 > Document compiled by integrating PRDs from April 20 and April 22 drafts.
-

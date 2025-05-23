@@ -4,12 +4,14 @@ from hydrobot.trading.portfolio import PortfolioManager
 
 def setup_module():
     utils._market_cache.clear()
-    utils._market_cache.update({
-        "BTC/USDT": {
-            "precision": {"amount": 4, "price": 2},
-            "limits": {"amount": {"min": 0.001}, "cost": {"min": 10}}
+    utils._market_cache.update(
+        {
+            "BTC/USDT": {
+                "precision": {"amount": 4, "price": 2},
+                "limits": {"amount": {"min": 0.001}, "cost": {"min": 10}},
+            }
         }
-    })
+    )
 
 
 def test_get_trade_quantity_rounding_and_min_size():
