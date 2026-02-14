@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
 class Signal(BaseModel):
@@ -14,7 +14,8 @@ class Signal(BaseModel):
     price: float
     timestamp: datetime
 
-    @validator("side", pre=True)
+    @field_validator("side", mode="before")
+    @classmethod
     def force_uppercase_side(cls, v):
         """Ensure side is uppercase for consistency."""
         return v.upper() if isinstance(v, str) else v

@@ -3,7 +3,7 @@
 import os
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, SecretStr, validator
+from pydantic import BaseModel, Field, SecretStr, field_validator
 
 from ..strategies.strategy_settings import (
     MeanReversionStrategySettings,
@@ -172,11 +172,13 @@ class AppSettings(BaseModel):
     )  # Optional for now
     redis: RedisSettings = Field(default_factory=RedisSettings)
 
-    @validator("log_level", pre=True, allow_reuse=True)
+    @field_validator("log_level", mode="before")
+    @classmethod
     def log_level_to_upper(cls, v):
         return v.upper()
 
-    @validator("environment", pre=True, allow_reuse=True)
+    @field_validator("environment", mode="before")
+    @classmethod
     def environment_to_lower(cls, v):
         return v.lower()
 

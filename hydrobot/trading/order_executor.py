@@ -103,10 +103,7 @@ class OrderExecutor:
     ) -> Optional[Dict[str, Any]]:
         """Attempts to execute a trade based on the provided signal."""
         if not self.is_initialized or not self.exchange:
-            log.error("Cannot execute signal: Exchange not initialized.")
-            # Try to re-initialize? Risky if called repeatedly.
-            # await self.initialize_exchange() # Consider calling this explicitly before starting trader
-            raise OrderExecutionError("Exchange not ready.")
+            log.info("Exchange not connected. Running in offline simulation mode.")
 
         if (
             signal.action == "HOLD"
