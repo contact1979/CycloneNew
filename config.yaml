@@ -55,7 +55,7 @@ scalping_strategy:
   lookback_period: 30    # How many data points (e.g., ticks, seconds) to look back
   min_profit_target_pct: 0.001 # Aim for at least 0.1% profit per scalp
   max_position_size_usd: 50.0 # Max USD value for a single scalping position
-  confidence_threshold: 0.5 # If using ML model, require > 50% confidence (set to null or 0 if no model)
+  confidence_threshold: null # Set to null when no ML model is available; set to 0.5+ when using ML predictions
 
 momentum_strategy:
   short_window: 10

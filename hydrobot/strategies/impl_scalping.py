@@ -1,5 +1,7 @@
 """Simple scalping strategy implementation."""
 
+from __future__ import annotations
+
 import math  # For isnan checks potentially
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
@@ -210,7 +212,7 @@ class ScalpingStrategy(Strategy):
                 log.debug(f"  Updating {key}: {current_value} -> {value}")
                 try:
                     # Attempt type conversion if necessary based on Pydantic field type
-                    field_type = self.config.__fields__[key].type_
+                    field_type = type(current_value)
                     converted_value = field_type(value)
                     setattr(self.config, key, converted_value)
                 except Exception as e:

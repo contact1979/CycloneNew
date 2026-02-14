@@ -134,7 +134,7 @@ async def test_position_manager():
 
     # New quantity = 0.3 - 0.15 = 0.15
     # Average entry price remains the same
-    assert position.quantity == 0.15
+    assert abs(position.quantity - 0.15) < 1e-6
     assert abs(position.average_entry_price - 106.67) < 0.01
 
 

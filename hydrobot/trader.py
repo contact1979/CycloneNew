@@ -208,6 +208,7 @@ class TradingManager:
             return
         log.info("Starting TradingManager...")
         self.is_running = True
+        self._offline_mode = False
         try:
             # Initialize executor (connects to exchange)
             await self.order_executor.initialize_exchange()  # Use renamed public method
@@ -216,9 +217,9 @@ class TradingManager:
             # Update market cache using the initialized executor's exchange object
             await trading_utils.update_market_cache(self.order_executor.exchange)
         except Exception as e:
-            log.critical(f"TradingManager start failed during initialization: {e}")
-            self.is_running = False
-            return
+            log.warning(f"Exchange initialization failed: {e}")
+            log.warning("Falling back to offline simulation mode (no real orders).")
+            self._offline_mode = True
 
         # --- Start Data Simulation ---
         log.warning("!!! STARTING SIMULATED MARKET DATA !!!")
